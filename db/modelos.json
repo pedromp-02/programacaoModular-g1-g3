@@ -1,0 +1,34 @@
+{
+	"Ajuda": {
+		"Sobre o modelo": "Esse arquivo contém os modelos das coleções de dados presentes no servidor do banco de dados MongoDB. Todos os módulos do projeto devem ser desenvolvidos usando como base esses modelos. Caso seja necessário a adição ou alteração de algum, só avisar para @Lucas Deano ou @Bia Sobreira.",
+		
+		"Sobre o Mongo": "O MongoDB é o banco de dados que mais cresce nos últimos anos. Ele funciona no modelo não relacional e serve para bancos de dados que necessitam de uma alta performance. A documentação do mongo é extremamente completa e pode ser encontrada em: https://www.mongodb.com/docs/manual/"
+	}
+
+	"usuarios": [
+		{
+			"_id": "MongoDB ObjectId",
+			"nome": "Barack Obama",
+			"email": "barackobama@gmail.com",
+			"usuario": "b.obama",
+			"senha": "senha123",
+			"cargo": 9
+		},
+		{
+			"_id": "MongoDB ObjectId",
+			"nome": "Donald Trump",
+			"email": "donaldtrump@gmail.com",
+			"usuario": "d.trump",
+			"senha": "key990",
+			"cargo": 1
+		},
+		{
+			"_id": "MongoDB ObjectId",
+			"nome": "Joe Biden",
+			"email": "j.biden@gmail.com",
+			"usuario": "j.biden",
+			"senha": "password11",
+			"cargo": 1
+		}
+	]
+}
