@@ -1,0 +1,2 @@
+def escreveOi():
+  print("oi")
