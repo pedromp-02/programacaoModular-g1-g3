@@ -2,6 +2,11 @@ import modulo_cripto
 import random
 import string
 
+
+def generate_salt():
+    return urandom(16).hex()
+
+  
 password = ''.join(random.choice(string.ascii_letters + string.digits + string.punctuation) for i in range(10)) #senha digitada pelo usuario no cadastro (pode pegar direto em um teste do banco se quisef)
 truepassword = password #senha digitada pelo usuario no login corretamente
 falsepassword = password + 'a' #senha digitada pelo usuario no login de forma errada 
