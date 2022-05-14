@@ -13,8 +13,8 @@ falsepassword = password + 'a' #senha digitada pelo usuario no login de forma er
 type = 'sha256' #tipo que o grupo 3 vai usar (eu acho)
 iterations = 100 #tipo que o grupo 3 vai usar (eu acho)
 dklen = 64 #tipo que o grupo 3 vai usar (eu acho)
-salt1 = modulo_cripto.generate_salt() # grupo 1 cria salt com 32 caracteres (se quiser pode deixar ja no banco de dados um de teste e usar ele)
-salt2 = modulo_cripto.generate_salt() #grupo 1 cria salt com 32 caracteres
+salt1 = generate_salt() # grupo 1 cria salt com 32 caracteres (se quiser pode deixar ja no banco de dados um de teste e usar ele)
+salt2 = generate_salt() #grupo 1 cria salt com 32 caracteres
 
 
 def testasalt():
