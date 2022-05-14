@@ -1,0 +1,1 @@
+from modulo_cripto.encryption import generate_hashed_password
