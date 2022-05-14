@@ -1,7 +1,7 @@
 import modulo_cripto
 import random
 import string
-
+from os import urandom
 
 def generate_salt():
     return urandom(16).hex()
