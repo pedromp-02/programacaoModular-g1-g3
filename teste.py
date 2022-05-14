@@ -33,4 +33,4 @@ def testasenhaerrada():
 
 
 def testasaltsdiferentes():
-  assert encryption.generate_hashed_password(type, password,salt1,iterations,dklen) != encryption.generate_hashed_password(type, password,salt2,iterations,dklen)
+  assert modulo_cripto.generate_hashed_password(type, password,salt1,iterations,dklen) != modulo_cripto.generate_hashed_password(type, password,salt2,iterations,dklen)
