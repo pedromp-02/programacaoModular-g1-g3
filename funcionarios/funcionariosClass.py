@@ -18,6 +18,9 @@ class funcionariosClass:
 	# Armazena o cargo do cliente logado para fazer as validações nas funções de manipulação de dados
 	clientCargo = None
 
+	# Armazena o email do cliente logado
+	clientMail = None
+
 	# Número do cargo que possui permissão de acesso a esse módulo
 	cargoNum = 9
 
@@ -37,37 +40,42 @@ class funcionariosClass:
 
 	# Função responsável por exibir as opções do módulo
 	# Exibida para: Todos
-	def showOptions(self, cargo):
+	def showOptions(self, email, cargo):
 		try:
+			# Atualiza o email do usuário logado
+			self.clientMail = email
+
 			# Atualiza o cargo do usuário
 			self.cargo = cargo
 
-			print("\n[MOD FUNCIONÁRIOS] - Por favor, escolha uma opção:")
+			
 
 			if cargo == self.cargoNum:
-				lista_op = ['Incluir funcionario','Excluir funcionario','Atualizar funcionario','Voltar']
+				lista_op = ['Incluir funcionario','Excluir funcionario','Atualizar funcionario','Listar Funcionarios','Voltar']
 				
 				
 				while True:
-					for i in range(4):
+					print("\n[MOD FUNCIONÁRIOS] - Por favor, escolha uma opção:")
+					for i in range(5):
 						print(f'\t[{i+1}] => {lista_op[i]} ')
 						
 					op = int(input('\n> '))
-					if op < 1 or op >4:
+					if op < 1 or op >5:
 						print('Opção não encontrada.\n')
 						print('Por favor, escolha uma opção:')
 						continue
-					break
 
 				
-				if op == 1:
-					self.inclui()
-				elif op == 2:
-					self.remove()
-				elif op == 3:
-					self.atualiza()
-				elif op == 4:
-					return
+					if op == 1:
+						self.inclui()
+					elif op == 2:
+						self.remove()
+					elif op == 3:
+						self.atualiza()
+					elif op == 4:
+						self.showOpListaFuncionarios()
+					elif op == 5:
+						return
 				
 			else:
 				print('Você não tem permissão para tal ferramenta.')
@@ -140,6 +148,9 @@ class funcionariosClass:
 		
 			email = input("Digite o e-mail do funcionário que deseja excluir: ")
 
+			if email == self.clientMail:
+				print("Você não possui permissão para remover você mesmo.")
+				return
 			
 			if self.busca_funcionario_email(email):
 				self.db.usuarios.delete_one({"email": email})
@@ -190,6 +201,7 @@ class funcionariosClass:
 		                {"email": email},
 		                {"$set": {campos[escolha-1]: atualizacao}}
 		            )
+					
 					print('\nAtualização feita com sucesso!\n')
 				return
 	
@@ -200,3 +212,101 @@ class funcionariosClass:
 			print(ex)
 
 
+	#Função responsavel para listar dados de um funcionario através do email
+	def listaUm_email(self,email):
+		try:
+			for user in self.db.usuarios.find():
+				
+				if user['email'] == email:
+					print('-='*20)
+					print(f"Nome: {user['nome']}\nEmail: {user['email']}\nUsuario:{user['usuario']}\nCargo:{user['cargo']}")
+					print('-='*20)
+
+		
+		except Exception as ex:
+			print("Ocorreu um erro na na função listaUm_email da classe funcionariosClass")
+			print(ex)
+
+
+	#Função responsavel para listar dados dos funcionarios através do cargo (Lista todos os funcionário de cargo x)
+	def listaPorCargo(self,cargo):
+		try:
+			
+			print('-='*20)
+			for user in self.db.usuarios.find():
+				
+				if int(user['cargo']) == cargo:
+					print(f"Nome: {user['nome']}\nEmail: {user['email']}\nUsuario:{user['usuario']}\nCargo:{user['cargo']}")
+					print('-='*20)
+
+					
+		except Exception as ex:
+			print("Ocorreu um erro na na função listaPorCargo da classe funcionariosClass")
+			print(ex)
+		
+
+
+	#Função responsavel por listar todos os funcionarios.
+	def listaTodos(self):
+		
+		try:
+			
+			print('-='*20)
+			for user in self.db.usuarios.find():
+				
+				print(f"Nome: {user['nome']}\nEmail: {user['email']}\nUsuario:{user['usuario']}\nCargo:{user['cargo']}")
+				print('-='*20)
+
+
+		
+		except Exception as ex:
+			print("Ocorreu um erro na na função listaTodos da classe funcionariosClass")
+			print(ex)
+
+
+	
+	#Função responsavel para mostar as opções de listagem de funcionários.
+	def showOpListaFuncionarios(self):
+		try:
+			if self.cargo != self.cargoNum:
+				print("Você não possui permissão para remover um funcionário.")
+				return
+
+			opcoes = ['Listar dados de um funcionario',
+				 	'Listar dados dos funcionarios através do cargo','Listar todos os funcionarios','Voltar']
+
+			while True:
+				print("\n[MOD FUNCIONÁRIOS] - Por favor, escolha uma opção:")
+				for i in range(4):
+					print(f'\t[{i+1}] => {opcoes[i]} ')
+				op_escolhida = int(input('\n> '))
+
+				if op_escolhida < 1 or op_escolhida > 4:
+					print('Opção não encontrada.\n')
+					continue
+					
+				if op_escolhida == 1:
+					email = input('Digite o email do funcionario: ')
+					if self.busca_funcionario_email(email):
+						self.listaUm_email(email)
+					else:
+						print('Usuario não encontrado.\n')
+						
+				elif op_escolhida == 2:
+					cargo = int(input('Digite o cargo: '))
+					self.listaPorCargo(cargo)
+					
+				elif op_escolhida == 3:
+					self.listaTodos()
+					
+				elif op_escolhida == 4:
+					return
+
+
+					
+		except Exception as ex:
+			print("Ocorreu um erro na na função lista Funcionarios da classe funcionariosClass")
+			print(ex)
+
+
+				

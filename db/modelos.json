@@ -1,9 +1,9 @@
 {
-	"Ajuda": {
-		"Sobre o modelo": "Esse arquivo contém os modelos das coleções de dados presentes no servidor do banco de dados MongoDB. Todos os módulos do projeto devem ser desenvolvidos usando como base esses modelos. Caso seja necessário a adição ou alteração de algum, só avisar para @Lucas Deano ou @Bia Sobreira.",
+	"ajuda": {
+		"sobre_o_modelo": "Esse arquivo contém os modelos das coleções de dados presentes no servidor do banco de dados MongoDB. Todos os módulos do projeto devem ser desenvolvidos usando como base esses modelos. Caso seja necessário a adição ou alteração de algum, só avisar para @Lucas Deano ou @Bia Sobreira.",
 		
-		"Sobre o Mongo": "O MongoDB é o banco de dados que mais cresce nos últimos anos. Ele funciona no modelo não relacional e serve para bancos de dados que necessitam de uma alta performance. A documentação do mongo é extremamente completa e pode ser encontrada em: https://www.mongodb.com/docs/manual/"
-	}
+		"sobre_o_mongo": "O MongoDB é o banco de dados que mais cresce nos últimos anos. Ele funciona no modelo não relacional e serve para bancos de dados que necessitam de uma alta performance. A documentação do mongo é extremamente completa e pode ser encontrada em: https://www.mongodb.com/docs/manual/"
+	},
 
 	"usuarios": [
 		{
@@ -29,6 +29,19 @@
 			"usuario": "j.biden",
 			"senha": "password11",
 			"cargo": 1
+		}
+	],
+
+	"projetos": [
+		{
+			"_id": "MongoDB ObjectId",
+			"nome": "Desenvolvimento do site do facebook",
+			"descricao": "Descricao do projeto",
+			"participantes": [
+				"MongoDB ObjectId de b.obama",
+				"MongoDB ObjectId de d.trump",
+				"MongoDB ObjectId de j.biden"
+			]
 		}
 	]
 }

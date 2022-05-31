@@ -18,10 +18,10 @@ class dbClass:
 			strConn = "mongodb+srv://<username>:<password>@<server>?<params>"
 
 			# Adicionando dados a string de conexão
-			strConn = strConn.replace("<username>", os.environ['strConnUsername'])
-			strConn = strConn.replace("<password>", os.environ['strConnPassword'])
-			strConn = strConn.replace("<server>", os.environ['strConnServer'])
-			strConn = strConn.replace("<params>", os.environ['strConnParams'])
+			strConn = strConn.replace("<username>", "deanolucas")
+			strConn = strConn.replace("<password>", "2RayOVKrVCA6lyTv")
+			strConn = strConn.replace("<server>", "cluster0.9bqok.mongodb.net/myFirstDatabase")
+			strConn = strConn.replace("<params>", "retryWrites=true&w=majority")
 
 			# Atualiza a string de conexão na classe
 			self.strConn = strConn
@@ -32,14 +32,9 @@ class dbClass:
 
 	# Função responsável por retornar a conexão com o banco de dados
 	def getDatabase(self):
-		try:
-			# Cria a conexão com o banco
-			client = pymongo.MongoClient(self.strConn, serverSelectionTimeoutMS=5000)
+		# Cria a conexão com o banco
+		client = pymongo.MongoClient(self.strConn, serverSelectionTimeoutMS=5000)
 
-			# Retorna o banco correto
-			return client["TrabalhoProgModular"]
-		
-		except Exception as ex:
-			print("Ocorreu um erro na na função getDatabase da classe dbClass")
-			print(ex)
+		# Retorna o banco correto
+		return client["TrabalhoProgModular"]
 		

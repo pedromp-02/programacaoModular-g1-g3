@@ -1,7 +1,8 @@
+from getpass import getpass
 from db.dbClass import dbClass
 from login.loginClass import loginClass
 from funcionarios.funcionariosClass import funcionariosClass
-
+from projetos.projetosClass import projetosClass
 
 # Mensagem de bem vindo ao sistema
 print("Sistema de gestão de RH (v0.0.1)")
@@ -9,8 +10,14 @@ print("---------------------------------------------------")
 
 # Cria a conexão com o banco de dados
 dbClass = dbClass()
-dbConn = dbClass.getDatabase()
 
+try:
+    dbConn = dbClass.getDatabase()
+
+except Exception as ex:
+	print("Ocorreu um erro na na função getDatabase da classe dbClass")
+	print(ex)
+	exit()
 
 # Cria o módulo de login
 loginClass = loginClass(dbConn)
@@ -24,7 +31,7 @@ while True:
     # TODO: O módulo de senha do grupo 1 deve entrar aqui na obtenção dos dados do usuário
 
     email = input("\t-> Email: ")
-    senha = input("\t-> Senha: ")
+    senha = getpass("\t-> Senha: ")
 
     # Efetua a tentativa de login
     if loginClass.tryLogIn(email, senha):
@@ -44,12 +51,16 @@ print("Bem vindo(a) ao sistema, " + usuario["nome"] + "\n")
 # Cria todos os módulos da aplicação
 # Os novos módulos devem ser adicionados após essa linha
 funcionariosClass = funcionariosClass(dbConn)
+projetosClass = projetosClass(dbConn)
 
 # Exibe os módulos e suas opções
 # Os novos módulos devem ser adicionados nessa lista
 opcoes = [{
     "number": 0,
     "descricao": funcionariosClass.getModuleDescription()
+}, {
+    "number": 1,
+    "descricao": projetosClass.getModuleDescription()
 }, {
     "number": 9,
     "descricao": "Finalizar o programa"
@@ -85,7 +96,10 @@ while True:
 
     # Switch das opções
     if opcaoSelecionada == 0:
-        funcionariosClass.showOptions(usuario["cargo"])
+        funcionariosClass.showOptions(usuario["email"], usuario["cargo"])
+
+    elif opcaoSelecionada == 1:
+        print("proj")
 
     else:
-        exit(0)
+        exit()
