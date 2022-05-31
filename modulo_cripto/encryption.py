@@ -1,3 +1,4 @@
+#https://1drv.ms/b/s!ArA-DhLm6QVXiK5UE-eEcEZxLB0-2w
 import hashlib
 
 def hash(hasher, password, salt):
