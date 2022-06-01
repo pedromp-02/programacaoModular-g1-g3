@@ -87,6 +87,55 @@
     </div>
 </div>
 
+<div class="modal s3" *ngIf="userIsLogged && showModalFuncionarios">
+    <div class="modal-background" (click)="hideModalFuncionarios()"></div>
+
+    <div class="modal-container">
+        <h1>{{ modalFuncionarios.title }}</h1>
+
+        <div class="form">
+            <div class="line">
+                <mat-form-field appearance="outline">
+                    <mat-label>Nome</mat-label>
+                    <input matInput placeholder="Nome" [(ngModel)]="modalFuncionariosNome">
+                    <mat-hint>* Obrigatório</mat-hint>
+                </mat-form-field>
+            </div>
+
+            <div class="line">
+                <mat-form-field appearance="outline">
+                    <mat-label>Usuário</mat-label>
+                    <input matInput placeholder="Usuário" [(ngModel)]="modalFuncionariosUser">
+                    <mat-hint>* Obrigatório</mat-hint>
+                </mat-form-field>
+            </div>
+
+            <div class="line">
+                <mat-form-field appearance="outline">
+                    <mat-label>Email</mat-label>
+                    <input matInput placeholder="Email" [(ngModel)]="modalFuncionariosEmail">
+                    <mat-hint>* Obrigatório</mat-hint>
+                </mat-form-field>
+            </div>
+
+            <div class="line">
+                <mat-form-field appearance="outline">
+                    <mat-label>Senha</mat-label>
+                    <input matInput [type]="hidePassword ? 'password' : 'text'" [(ngModel)]="modalFuncionariosSenha">
+                    <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" [attr.aria-label]="'Ocultar password'" [attr.aria-pressed]="hidePassword">
+                        <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                    </button>
+                    <mat-hint>* Obrigatório</mat-hint>
+                </mat-form-field>
+            </div>
+
+            <div class="line">
+                <button mat-raised-button color="primary" (click)="actionModalFuncionarios(modalFuncionarios.role)">{{ modalFuncionarios.role === 'add' ? 'Adicionar' : 'Salvar' }}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="content" *ngIf="userIsLogged">
     <div class="container">
         <div class="title">

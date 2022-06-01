@@ -52,6 +52,13 @@ export class AppComponent {
     public modalProjetosParticipante: string = '';
 
     public funcionariosData: Array<Usuario> = [];
+    public showModalFuncionarios: boolean = false;
+    public modalFuncionarios: any = {};
+    public modalFuncionariosId: string = '';
+    public modalFuncionariosNome: string = '';
+    public modalFuncionariosUser: string = '';
+    public modalFuncionariosEmail: string = '';
+    public modalFuncionariosSenha: string = '';
 
     /**
      * Grids
@@ -176,12 +183,20 @@ export class AppComponent {
 
             this.showModalProjetos = true;
         }
+        else {
+            this.modalFuncionarios = {
+                title: 'Adicionar um funcionário',
+                role: 'add'
+            };
+
+            this.showModalFuncionarios = true;
+        }
     }
 
     /**
      * Função responsável por abrir a modal de edicao
      */
-     public openModalEdit(id: string) {
+    public openModalEdit(id: string) {
         if (this.componentInView === 'PROJETOS') {
             this.modalProjetos = {
                 title: 'Editar o projeto',
@@ -197,8 +212,27 @@ export class AppComponent {
 
             this.showModalProjetos = true;
         }
+        else {
+            this.modalFuncionarios = {
+                title: 'Editar dados do funcionário',
+                role: 'edit'
+            };
+
+            const funcionario = this.funcionariosData.filter(e => e._id === id)[0];
+
+            this.modalFuncionariosId = id;
+            this.modalFuncionariosNome = funcionario.nome;
+            this.modalFuncionariosUser = funcionario.usuario;
+            this.modalFuncionariosEmail = funcionario.email;
+            this.modalFuncionariosSenha = '';
+
+            this.showModalFuncionarios = true;
+        }
     }
 
+    /**
+     * Função responsável por ocultar a modal de projetos
+     */
     public hideModalProjetos() {
         this.modalProjetosId = '';
         this.modalProjetosNome = '';
@@ -208,6 +242,22 @@ export class AppComponent {
         this.showModalProjetos = false;
     }
 
+    /**
+     * Função responsável por ocultar a modal de funcionarios
+     */
+    public hideModalFuncionarios() {
+        this.modalFuncionariosId = '';
+        this.modalFuncionariosNome = '';
+        this.modalFuncionariosUser = '';
+        this.modalFuncionariosEmail = '';
+        this.modalFuncionariosSenha = '';
+
+        this.showModalFuncionarios = false;
+    }
+
+    /**
+     * Ação da modal de projetos
+     */
     public async actionModalProjetos(role: 'add' | 'edit') {
         const jwt = this.userData.auth === undefined ? '' : this.userData.auth.toString();
         let message: string;
@@ -240,6 +290,44 @@ export class AppComponent {
         this.getDataToView();
     }
 
+    /**
+     * Ação da modal de funcionarios
+     */
+    public async actionModalFuncionarios(role: 'add' | 'edit') {
+        const jwt = this.userData.auth === undefined ? '' : this.userData.auth.toString();
+        let message: string;
+        let data: any;
+
+        if (role === 'add') {
+            data = await this.appService.addFuncionario(jwt, this.modalFuncionariosNome, this.modalFuncionariosUser, this.modalFuncionariosEmail, this.modalFuncionariosSenha);
+            
+            if (data.hasOwnProperty('status')) {
+                message = data.error.message;
+            }
+            else {
+                message = data.message;
+            }
+        }
+        else {
+            data = await this.appService.editFuncionario(jwt, this.modalFuncionariosId, this.modalFuncionariosNome, this.modalFuncionariosUser, this.modalFuncionariosEmail, this.modalFuncionariosSenha);
+            
+            if (data.hasOwnProperty('status')) {
+                message = data.error.message;
+            }
+            else {
+                message = data.message;
+            }
+        }
+
+        this.hideModalFuncionarios();
+        this.snackBar.open(message, 'Fechar');
+        this.funcionariosData = [];
+        this.getDataToView();
+    }
+
+    /**
+     * Botão de remoção do grid
+     */
     public async gridControlRemoveClick(id: string) {
         const jwt = this.userData.auth === undefined ? '' : this.userData.auth.toString();
         let message;
@@ -253,13 +341,23 @@ export class AppComponent {
             else {
                 message = data.message;
             }
+
+            this.projetosData = [];
         }
         else {
+            const data: any = await this.appService.removeFuncionario(jwt, id);
 
+            if (data.hasOwnProperty('status')) {
+                message = data.error.message;
+            }
+            else {
+                message = data.message;
+            }
+
+            this.funcionariosData = [];
         }
 
         this.snackBar.open(message, 'Fechar');
-        this.projetosData = [];
         this.getDataToView();
     }
 }

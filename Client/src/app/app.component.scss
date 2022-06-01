@@ -67,6 +67,11 @@
         height: 400px;
         top: calc(50% - 200px);
     }
+
+    &.s3 .modal-container {
+        height: 450px;
+        top: calc(50% - 225px);
+    }
 }
 
 #main-menu {

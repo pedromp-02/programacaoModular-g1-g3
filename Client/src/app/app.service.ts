@@ -51,6 +51,78 @@ export class AppService {
         }
     }
 
+    public addFuncionario(jwt: string, nome: string, usuario: string, email: string, senha: string) {
+        try {
+            return new Promise<any>((resolve, reject) => {
+                /**
+                 * Busca os dados no servidor
+                 */
+                this.httpClientModule
+                    .put<any>(`${this.apiUrl}/funcionarios/add`, { nome, usuario, email, senha },
+                    {
+                        headers: new HttpHeaders ({
+                            'Content-Type': 'application/json; charset=utf-8',
+                            'Authorization': 'Bearer ' + jwt
+                        })
+                    })
+                    .toPromise()
+                    .then((projetosData: any) => resolve(projetosData))
+                    .catch(e => resolve(e));
+            });
+        }
+        catch (e) {
+            return Promise.reject(e);
+        }
+    }
+
+    public editFuncionario(jwt: string, id: string, nome: string, usuario: string, email: string, senha: string) {
+        try {
+            return new Promise<any>((resolve, reject) => {
+                /**
+                 * Busca os dados no servidor
+                 */
+                this.httpClientModule
+                    .post<any>(`${this.apiUrl}/funcionarios/${id}`, { nome, usuario, email, senha },
+                    {
+                        headers: new HttpHeaders ({
+                            'Content-Type': 'application/json; charset=utf-8',
+                            'Authorization': 'Bearer ' + jwt
+                        })
+                    })
+                    .toPromise()
+                    .then((projetosData: any) => resolve(projetosData))
+                    .catch(e => resolve(e));
+            });
+        }
+        catch (e) {
+            return Promise.reject(e);
+        }
+    }
+
+    public removeFuncionario(jwt: string, id: string) {
+        try {
+            return new Promise<any>((resolve, reject) => {
+                /**
+                 * Busca os dados no servidor
+                 */
+                this.httpClientModule
+                    .delete<any>(`${this.apiUrl}/funcionarios/${id}`,
+                    {
+                        headers: new HttpHeaders ({
+                            'Content-Type': 'application/json; charset=utf-8',
+                            'Authorization': 'Bearer ' + jwt
+                        })
+                    })
+                    .toPromise()
+                    .then((projetosData: any) => resolve(projetosData))
+                    .catch(e => resolve(e));
+            });
+        }
+        catch (e) {
+            return Promise.reject(e);
+        }
+    }
+
     public getProjetos(): Promise<Array<Projeto>> {
         try {
             return new Promise<Array<Projeto>>((resolve, reject) => {
