@@ -21,9 +21,9 @@ class projetosClass(Resource):
 
 	def delete(self, id):
 		try:
-			cargoUsuarioLogado = userModel.isUserLogado(request)
+			usuarioLogado = userModel.isUserLogado(request)
 
-			if cargoUsuarioLogado != 9:
+			if usuarioLogado["cargo"] != 9:
 				return {'message': 'Você não possui permissão para remover um projeto.'}, 401
 
 			if not self.busca_projeto(id):
@@ -37,11 +37,6 @@ class projetosClass(Resource):
 
 	def get(self, id):
 		try:
-			cargoUsuarioLogado = userModel.isUserLogado(request)
-
-			if cargoUsuarioLogado != 9:
-				return {'message': 'Você não possui permissão para visualizar os projetos.'}, 401
-
 			return loads(dumps(list(self.db.projetos.find())))
 		
 		except Exception as ex:
@@ -49,9 +44,9 @@ class projetosClass(Resource):
 
 	def put(self, id):
 		try:
-			cargoUsuarioLogado = userModel.isUserLogado(request)
+			usuarioLogado = userModel.isUserLogado(request)
 
-			if cargoUsuarioLogado != 9:
+			if usuarioLogado["cargo"] != 9:
 				return {'message': 'Você não possui permissão para incluir um projeto.'}, 401
 
 			if 'nome' not in request.json:
@@ -82,9 +77,9 @@ class projetosClass(Resource):
 
 	def post(self, id):
 		try:
-			cargoUsuarioLogado = userModel.isUserLogado(request)
+			usuarioLogado = userModel.isUserLogado(request)
 
-			if cargoUsuarioLogado != 9:
+			if usuarioLogado["cargo"] != 9:
 				return {'message': 'Você não possui permissão para atualizar um projeto.'}, 401
 
 			if not self.busca_projeto(id):

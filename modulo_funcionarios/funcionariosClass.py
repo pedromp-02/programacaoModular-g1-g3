@@ -22,10 +22,10 @@ class funcionariosClass(Resource):
 
 	def delete(self, id):
 		try:
-			cargoUsuarioLogado = userModel.isUserLogado(request)
+			usuarioLogado = userModel.isUserLogado(request)
 
-			if cargoUsuarioLogado != 9:
-				return {'message': 'Você não possui permissão para remover um funcionário.'}, 401
+			if usuarioLogado["cargo"] != 9 and usuarioLogado["id"] != id:
+				return {'message': 'Você não possui permissão para remover um outro funcionário.'}, 401
 
 			if not self.busca_funcionario(id):
 				return {'message': 'O funcionário informado não foi encontrado.'}, 200
@@ -38,11 +38,6 @@ class funcionariosClass(Resource):
 
 	def get(self, id):
 		try:
-			cargoUsuarioLogado = userModel.isUserLogado(request)
-
-			if cargoUsuarioLogado != 9:
-				return {'message': 'Você não possui permissão para visualizar os funcionários.'}, 401
-
 			return loads(dumps(list(self.db.usuarios.find({}, {'senha': 0, 'salt': 0}))))
 		
 		except Exception as ex:
@@ -50,9 +45,9 @@ class funcionariosClass(Resource):
   
 	def put(self, id):
 		try:
-			cargoUsuarioLogado = userModel.isUserLogado(request)
+			usuarioLogado = userModel.isUserLogado(request)
 
-			if cargoUsuarioLogado != 9:
+			if usuarioLogado["cargo"] != 9:
 				return {'message': 'Você não possui permissão para incluir um funcionário.'}, 401
 
 			if 'nome' not in request.json:
@@ -96,10 +91,10 @@ class funcionariosClass(Resource):
 
 	def post(self, id):
 		try:
-			cargoUsuarioLogado = userModel.isUserLogado(request)
+			usuarioLogado = userModel.isUserLogado(request)
 
-			if cargoUsuarioLogado != 9:
-				return {'message': 'Você não possui permissão para alterar um funcionário.'}, 401
+			if usuarioLogado["cargo"] != 9 and usuarioLogado["id"] != id:
+				return {'message': 'Você não possui permissão para alterar outro funcionário.'}, 401
 
 			if not self.busca_funcionario(id):
 				return {'message': 'O funcionário informado não foi encontrado.'}, 200

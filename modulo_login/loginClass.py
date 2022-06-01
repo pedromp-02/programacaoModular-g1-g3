@@ -7,11 +7,14 @@ import jwt
 
 class userModel():
 	@staticmethod
-	def encode_auth_token(cargo):
+	def encode_auth_token(cargo, id):
 		try:
 			payload = {
 				'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=60),
-				'sub': cargo
+				'sub': {
+					'cargo': cargo,
+					'id': id
+				}
 			}
 
 			return jwt.encode(payload, 'chaveSecreta', algorithm="HS256")
@@ -98,7 +101,7 @@ class loginClass(Resource):
 					usuario.pop("salt")
 
 				# Gera o token de autenticação
-				auth_token = userModel.encode_auth_token(usuario["cargo"])
+				auth_token = userModel.encode_auth_token(usuario["cargo"], usuario["_id"])
 
 				if auth_token == None:
 					return {'message': 'Ocorreu um erro interno. Tente novamente mais tarde.'}, 500
@@ -106,6 +109,8 @@ class loginClass(Resource):
 				# Cria a resposta
 				response = {
 					'message': 'OK.',
+					'nome': usuario["nome"],
+					'cargo': usuario["cargo"],
 					'auth': auth_token
 				}
 
