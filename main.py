@@ -56,10 +56,10 @@ projetosClass = projetosClass(dbConn)
 # Exibe os módulos e suas opções
 # Os novos módulos devem ser adicionados nessa lista
 opcoes = [{
-    "number": 0,
+    "number": 1,
     "descricao": funcionariosClass.getModuleDescription()
 }, {
-    "number": 1,
+    "number": 2,
     "descricao": projetosClass.getModuleDescription()
 }, {
     "number": 9,
@@ -95,10 +95,10 @@ while True:
         continue
 
     # Switch das opções
-    if opcaoSelecionada == 0:
+    if opcaoSelecionada == 1:
         funcionariosClass.showOptions(usuario["email"], usuario["cargo"])
 
-    elif opcaoSelecionada == 1:
+    elif opcaoSelecionada == 2:
         print("proj")
 
     else:

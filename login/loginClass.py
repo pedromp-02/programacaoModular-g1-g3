@@ -1,8 +1,4 @@
-# Módulo de login
-# Responsável por efetuar o login e retornar os dados do usuário
-#
-# Criado em 21-04-2022 por Pedro Arduini e Gusthavo
-# --------------------------------------------------------------------
+import modulo_cripto
 
 # Classe principal do módulo
 class loginClass:
@@ -23,14 +19,30 @@ class loginClass:
 	# Função responsável por efetuar a tentativa de login
 	def tryLogIn(self, email, senha):
 		try:
-			# Realiza a busca do usuário e remove o campo senha do retorno, pois é um dado sensível
-			usuarios = self.db.usuarios.find({"email": email,
-				"senha": senha},{"senha": 0}).limit(1)
+			# Realiza a busca do usuário
+			usuarios = self.db.usuarios.find({"email": email}).limit(1)
 
-			# Retorna true ou false de acordo com o array
+			# Se retornar uma quantidade de usuários diferente de 1, loguin falhou
 			for usuario in usuarios:
+				# Obtém os dados para verificar a senha
+				senhaUsuarioNoBanco = usuario["senha"]
+				saltUsuarioNoBanco = usuario["salt"]
+
+				# Criptografa a senha digitada pelo usuário
+				senhaCriptografada = modulo_cripto.generate_hashed_password('sha256', senha, saltUsuarioNoBanco, 100, 64)
+
+				# Se senhas forem diferentes
+				if senhaUsuarioNoBanco != senhaCriptografada:
+					return False
+
+				# Se as senhas forem iguais, remove a senha e o salt do objeto
+				else:
+					usuario.pop("senha")
+					usuario.pop("salt")
+
 				# Guarda os dados do usuário logado
 				self.usuario = usuario
+
 				return True
 			
 			return False

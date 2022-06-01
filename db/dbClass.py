@@ -1,11 +1,4 @@
 import pymongo
-import os
-
-# Módulo do banco de dados
-# Responsável por gerenciar todas as requisições para o banco
-#
-# Criado em 05-04-2022 por Lucas Deano
-# --------------------------------------------------------------------
 
 # Classe principal do módulo
 class dbClass:

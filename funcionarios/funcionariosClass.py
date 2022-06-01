@@ -1,14 +1,6 @@
-# Módulo do controle de funcionários
-# Responsável por gerenciar todas as operações dos funcionários
-#
-# Criado em 21-04-2022 por Pedro Arduini e Gusthavo
-# --------------------------------------------------------------------
-# Atualizado em 22-04-2022 por Lucas Deano:
-# Inclusão de tratamento de erros nas funções (try/catch)
-# Inclusão do recebimento da classe de banco de dados
-# Inclusão das funções getModuleDescription e showOptions
-# Inclusão da validação do cargo do usuário ao executar uma função de manipulação de dados
-# --------------------------------------------------------------------
+from getpass import getpass
+from os import urandom
+import modulo_cripto
 
 # Classe principal do módulo
 class funcionariosClass:
@@ -38,6 +30,26 @@ class funcionariosClass:
 	def getModuleDescription(self):
 		return "Controle de funcionários"
 
+	# Função responsável por exibir uma lista de opções para o usuário
+	def exibeOpcoesEPegaDigitada(self, listaDeOpcoes):
+		for i in range(len(listaDeOpcoes)):
+			print(f'\t[{i+1}] => {listaDeOpcoes[i]} ')
+
+		print('\t[9] => Voltar')
+
+		opcaoDigitada = int(input("\n> "))
+
+		if opcaoDigitada == 9:
+			return opcaoDigitada
+
+		elif opcaoDigitada > len(listaDeOpcoes) or opcaoDigitada < 0:
+			print('Opção não encontrada.\n')
+			self.exibeOpcoesEPegaDigitada(listaDeOpcoes)
+
+			return
+
+		return opcaoDigitada
+
 	# Função responsável por exibir as opções do módulo
 	# Exibida para: Todos
 	def showOptions(self, email, cargo):
@@ -48,24 +60,13 @@ class funcionariosClass:
 			# Atualiza o cargo do usuário
 			self.cargo = cargo
 
-			
-
 			if cargo == self.cargoNum:
-				lista_op = ['Incluir funcionario','Excluir funcionario','Atualizar funcionario','Listar Funcionarios','Voltar']
-				
+				lista_op = ['Incluir funcionario', 'Excluir funcionario', 'Atualizar funcionario', 'Listar Funcionarios']
 				
 				while True:
 					print("\n[MOD FUNCIONÁRIOS] - Por favor, escolha uma opção:")
-					for i in range(5):
-						print(f'\t[{i+1}] => {lista_op[i]} ')
-						
-					op = int(input('\n> '))
-					if op < 1 or op >5:
-						print('Opção não encontrada.\n')
-						print('Por favor, escolha uma opção:')
-						continue
+					op = self.exibeOpcoesEPegaDigitada(lista_op)
 
-				
 					if op == 1:
 						self.inclui()
 					elif op == 2:
@@ -74,7 +75,7 @@ class funcionariosClass:
 						self.atualiza()
 					elif op == 4:
 						self.showOpListaFuncionarios()
-					elif op == 5:
+					elif op == 9:
 						return
 				
 			else:
@@ -118,14 +119,22 @@ class funcionariosClass:
 					break
 	
 			usuario = input('Digite o usuario: ')
-			senha = input('Digite a senha do usuario: ')
+			senha = getpass('Digite a senha do usuario: ')
 			cargo = int(input('Digite o cargo do usuário: '))
-	
+
+			# Gera o salt para o novo usuário
+			salt = urandom(16).hex()
+
+			# Criptografa a senha digitada pelo usuário
+			senhaCriptografada = modulo_cripto.generate_hashed_password('sha256', senha, salt, 100, 64)
+
+			# Inclui o novo usuário no banco de dados
 			self.db.usuarios.insert_one({
 	        	'nome': nome,
 	        	'email': email,
 	        	'usuario': usuario,
-	        	'senha': senha,
+	        	'senha': senhaCriptografada,
+				'salt': salt,
 	        	'cargo': cargo
 	        })
 	    	
@@ -171,36 +180,57 @@ class funcionariosClass:
 			if self.cargo != self.cargoNum:
 				print("Você não possui permissão para atualizar um funcionário.")
 				return
-	
+
 			email = input("Digite o email do funcionário que deseja atualizar: ")
 			
 			if self.busca_funcionario_email(email):
 				texto = "Digite qual campo você deseja atualizar"
-				campos = ["nome","email","usuario","senha","cargo"]
-				interface = ["1 - Nome", "2 - E-mail", "3 - Usuário", "4 - Senha", "5 - Cargo", "6 - Não quero atualizar mais nada"]
+				campos = ["nome", "email", "usuario", "senha", "cargo"]
+				interface = ["Nome", "E-mail", "Usuário", "Senha", "Cargo"]
 	
 				while True:
 					print(texto)
-					
-					for i in range(len(interface)):
-						print(interface[i])
-	
-					escolha = int(input())
-	
-					if escolha == 6:
+
+					escolha = self.exibeOpcoesEPegaDigitada(interface)
+
+					if escolha == 9:
 						break
-					elif escolha > 6 or escolha <1:
-						print('-='*20)
-						print("Digite um campo valído!")
-						print('-='*20)
-					else:
+
+					if escolha != 4:
 						atualizacao = input("Qual o novo valor do campo %s? "%campos[escolha-1])
 
-					# Atualiza os dados
-					self.db.usuarios.update_one(
-		                {"email": email},
-		                {"$set": {campos[escolha-1]: atualizacao}}
-		            )
+						# Atualiza os dados
+						self.db.usuarios.update_one(
+							{"email": email},
+							{"$set": {campos[escolha-1]: atualizacao}}
+						)
+
+					# Se for para atualizar a senha
+					else:
+						senha = getpass('Digite a nova senha do usuario: ')
+						senhaConfirmacao = getpass('Confirme a nova senha do usuario: ')
+
+						# Valida se as senhas digitadas são iguais
+						if senha != senhaConfirmacao:
+							print("As confirmação da senha falhou, tente novamente.")
+							continue
+
+						# Gera o salt para o novo usuário
+						salt = urandom(16).hex()
+
+						# Criptografa a senha digitada pelo usuário
+						senhaCriptografada = modulo_cripto.generate_hashed_password('sha256', senha, salt, 100, 64)
+
+						# Atualiza a senha
+						self.db.usuarios.update_one(
+							{"email": email},
+							{"$set": 
+								{
+									"senha": senhaCriptografada,
+									"salt": salt
+								}
+							}
+						)
 					
 					print('\nAtualização feita com sucesso!\n')
 				return
@@ -210,7 +240,6 @@ class funcionariosClass:
 		except Exception as ex:
 			print("Ocorreu um erro na na função atualiza da classe funcionariosClass")
 			print(ex)
-
 
 	#Função responsavel para listar dados de um funcionario através do email
 	def listaUm_email(self,email):
@@ -227,43 +256,32 @@ class funcionariosClass:
 			print("Ocorreu um erro na na função listaUm_email da classe funcionariosClass")
 			print(ex)
 
-
 	#Função responsavel para listar dados dos funcionarios através do cargo (Lista todos os funcionário de cargo x)
 	def listaPorCargo(self,cargo):
-		try:
-			
+		try:	
 			print('-='*20)
-			for user in self.db.usuarios.find():
-				
+
+			for user in self.db.usuarios.find():				
 				if int(user['cargo']) == cargo:
 					print(f"Nome: {user['nome']}\nEmail: {user['email']}\nUsuario:{user['usuario']}\nCargo:{user['cargo']}")
 					print('-='*20)
-
 					
 		except Exception as ex:
 			print("Ocorreu um erro na na função listaPorCargo da classe funcionariosClass")
 			print(ex)
-		
-
 
 	#Função responsavel por listar todos os funcionarios.
 	def listaTodos(self):
-		
 		try:
-			
 			print('-='*20)
+
 			for user in self.db.usuarios.find():
-				
 				print(f"Nome: {user['nome']}\nEmail: {user['email']}\nUsuario:{user['usuario']}\nCargo:{user['cargo']}")
 				print('-='*20)
-
-
 		
 		except Exception as ex:
 			print("Ocorreu um erro na na função listaTodos da classe funcionariosClass")
 			print(ex)
-
-
 	
 	#Função responsavel para mostar as opções de listagem de funcionários.
 	def showOpListaFuncionarios(self):
@@ -301,12 +319,8 @@ class funcionariosClass:
 					
 				elif op_escolhida == 4:
 					return
-
-
 					
 		except Exception as ex:
 			print("Ocorreu um erro na na função lista Funcionarios da classe funcionariosClass")
 			print(ex)
-
-
 				
