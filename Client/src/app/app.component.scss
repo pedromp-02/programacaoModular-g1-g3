@@ -11,6 +11,7 @@
     height: 100%;
     left: 0;
     top: 0;
+    z-index: 2;
 
     .modal-background {
         position: absolute;
@@ -19,7 +20,7 @@
         left: 0;
         top: 0;
         background-color: rgba(0, 0, 0, .3);
-        z-index: 1;
+        z-index: 3;
     }
 
     .modal-container {
@@ -29,7 +30,7 @@
         left: calc(50% - 200px);
         top: calc(50% - 150px);
         background-color: #fff;
-        z-index: 2;
+        z-index: 4;
         border-radius: 10px;
         text-align: center;
         padding: 30px;
@@ -77,10 +78,64 @@
         .title {
             font-size: 24px;
             color: #fff;
+
+            span {
+                display: block;
+                margin-top: 6px;
+                font-size: 14px;    
+            }
         }
 
         button {
             margin-left: 10px;
         }
     }
+}
+
+.content {
+    margin-top: 50px;
+
+    .title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        h1 {
+            margin:  0;
+        }
+    }
+
+    .table {
+        margin-top: 30px;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 3px 5px -1px #0003, 0 6px 10px #00000024, 0 1px 18px #0000001f;
+        overflow: hidden;
+
+        table {
+            width: 100%;
+        }
+
+        &.center {
+            text-align: center;
+            padding: 30px 0;
+
+            .mat-progress-spinner {
+                margin: 0 auto;
+            }
+        }
+    }
+}
+
+footer {
+    position: fixed;
+    background-color: rgb(232, 232, 232);
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    padding: 20px 0;
+    font-size: 14px;
+    color: #333;
+    z-index: 1;
 }
