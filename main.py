@@ -99,7 +99,7 @@ while True:
         funcionariosClass.showOptions(usuario["email"], usuario["cargo"])
 
     elif opcaoSelecionada == 2:
-        print("proj")
+        projetosClass.showOptions(usuario["cargo"])
 
     else:
         exit()

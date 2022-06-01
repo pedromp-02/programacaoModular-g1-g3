@@ -145,8 +145,6 @@ class funcionariosClass:
 			print("Ocorreu um erro na na função inclui da classe funcionariosClass")
 			print(ex)
 
-
-
 	# Função responsável por remover um usuário
 	def remove(self):
 		try:
@@ -241,7 +239,7 @@ class funcionariosClass:
 			print("Ocorreu um erro na na função atualiza da classe funcionariosClass")
 			print(ex)
 
-	#Função responsavel para listar dados de um funcionario através do email
+	# Função responsavel para listar dados de um funcionario através do email
 	def listaUm_email(self,email):
 		try:
 			for user in self.db.usuarios.find():
@@ -256,7 +254,7 @@ class funcionariosClass:
 			print("Ocorreu um erro na na função listaUm_email da classe funcionariosClass")
 			print(ex)
 
-	#Função responsavel para listar dados dos funcionarios através do cargo (Lista todos os funcionário de cargo x)
+	# Função responsavel para listar dados dos funcionarios através do cargo (Lista todos os funcionário de cargo x)
 	def listaPorCargo(self,cargo):
 		try:	
 			print('-='*20)
@@ -270,7 +268,7 @@ class funcionariosClass:
 			print("Ocorreu um erro na na função listaPorCargo da classe funcionariosClass")
 			print(ex)
 
-	#Função responsavel por listar todos os funcionarios.
+	# Função responsavel por listar todos os funcionarios.
 	def listaTodos(self):
 		try:
 			print('-='*20)
@@ -283,11 +281,11 @@ class funcionariosClass:
 			print("Ocorreu um erro na na função listaTodos da classe funcionariosClass")
 			print(ex)
 	
-	#Função responsavel para mostar as opções de listagem de funcionários.
+	# Função responsavel para mostar as opções de listagem de funcionários.
 	def showOpListaFuncionarios(self):
 		try:
 			if self.cargo != self.cargoNum:
-				print("Você não possui permissão para remover um funcionário.")
+				print("Você não possui permissão para visualizar os funcionário.")
 				return
 
 			opcoes = ['Listar dados de um funcionario',
@@ -323,4 +321,3 @@ class funcionariosClass:
 		except Exception as ex:
 			print("Ocorreu um erro na na função lista Funcionarios da classe funcionariosClass")
 			print(ex)
-				
