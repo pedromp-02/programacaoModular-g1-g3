@@ -1,0 +1,47 @@
+<div id="main-menu">
+    <div class="container">
+        <div class="title">Sistema de gestão de RH</div>
+
+        <div class="menu" *ngIf="userIsLogged">
+            <button mat-raised-button color="accent">Funcionários</button>
+            <button mat-raised-button color="accent">Projetos</button>
+        </div>
+
+        <div class="menu" *ngIf="!userIsLogged">
+            <button mat-raised-button color="accent" (click)="toggleLogin()">Entrar</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal" *ngIf="!userIsLogged && showLogin">
+    <div class="modal-background" (click)="toggleLogin()"></div>
+
+    <div class="modal-container">
+        <h1>Acesso</h1>
+
+        <div class="form">
+            <div class="line">
+                <mat-form-field appearance="outline">
+                    <mat-label>Email</mat-label>
+                    <input matInput placeholder="Email" [(ngModel)]="formLoginEmail">
+                    <mat-hint>* Obrigatório</mat-hint>
+                </mat-form-field>
+            </div>
+
+            <div class="line">
+                <mat-form-field appearance="outline">
+                    <mat-label>Senha</mat-label>
+                    <input matInput [type]="hidePassword ? 'password' : 'text'" [(ngModel)]="formLoginSenha">
+                    <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" [attr.aria-label]="'Ocultar password'" [attr.aria-pressed]="hidePassword">
+                        <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                    </button>
+                    <mat-hint>* Obrigatório</mat-hint>
+                </mat-form-field>
+            </div>
+
+            <div class="line">
+                <button mat-raised-button color="primary" (click)="doLogin()">Entrar</button>
+            </div>
+        </div>
+    </div>
+</div>
