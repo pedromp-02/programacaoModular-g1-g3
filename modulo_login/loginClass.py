@@ -28,6 +28,25 @@ class userModel():
 		except Exception as e:
 			return 'Token inválido. Faça login novamente.'
 
+	@staticmethod
+	def isUserLogado(req):
+		auth_header = req.headers.get('Authorization')
+
+		if auth_header:
+			auth_token = auth_header.split(" ")[1]
+		else:
+			auth_token = ''
+
+		if auth_token:
+			resp = userModel.decode_auth_token(auth_token)
+
+			if isinstance(resp, str):
+				return {'message': resp}, 401
+
+			return resp["sub"]
+			
+		return {'message': 'O Token é obrigatório'}, 401
+
 
 # Classe principal do módulo
 class loginClass(Resource):

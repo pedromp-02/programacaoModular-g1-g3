@@ -19,26 +19,8 @@ class projetosClass(Resource):
 		
 		super().__init__()
 
-	def isUserLogado(self):
-		auth_header = request.headers.get('Authorization')
-
-		if auth_header:
-			auth_token = auth_header.split(" ")[1]
-		else:
-			auth_token = ''
-
-		if auth_token:
-			resp = userModel.decode_auth_token(auth_token)
-
-			if isinstance(resp, str):
-				return {'message': resp}, 401
-
-			return resp["sub"]
-			
-		return {'message': 'O Token é obrigatório'}, 401
-
 	def delete(self, id):
-		cargoUsuarioLogado = self.isUserLogado()
+		cargoUsuarioLogado = userModel.isUserLogado(request)
 
 		if cargoUsuarioLogado != 9:
 			return {'message': 'Você não possui permissão para remover um projeto.'}, 401
@@ -50,7 +32,7 @@ class projetosClass(Resource):
 		return {'message': 'Projeto removido com sucesso.'}, 200
 
 	def get(self, id):
-		cargoUsuarioLogado = self.isUserLogado()
+		cargoUsuarioLogado = userModel.isUserLogado(request)
 
 		if cargoUsuarioLogado != 9:
 			return {'message': 'Você não possui permissão para visualizar os projetos.'}, 401
@@ -58,7 +40,7 @@ class projetosClass(Resource):
 		return loads(dumps(list(self.db.projetos.find())))
 
 	def put(self, id):
-		cargoUsuarioLogado = self.isUserLogado()
+		cargoUsuarioLogado = userModel.isUserLogado(request)
 
 		if cargoUsuarioLogado != 9:
 			return {'message': 'Você não possui permissão para incluir um projeto.'}, 401
@@ -87,7 +69,7 @@ class projetosClass(Resource):
 		return {'message': 'O projeto foi inserido com sucesso.', 'id': id}, 200
 
 	def post(self, id):
-		cargoUsuarioLogado = self.isUserLogado()
+		cargoUsuarioLogado = userModel.isUserLogado(request)
 
 		if cargoUsuarioLogado != 9:
 			return {'message': 'Você não possui permissão para atualizar um projeto.'}, 401
@@ -95,28 +77,20 @@ class projetosClass(Resource):
 		if not self.busca_projeto(id):
 			return {'message': 'O projeto informado não foi encontrado.'}, 200
 
-		if 'nome' not in request.json:
-			return {'message': 'O nome do projeto é obrigatório.'}, 200
+		setObject = {}
 
-		if 'descricao' not in request.json:
-			return {'message': 'A descrição do projeto é obrigatória.'}, 200
+		if 'nome' in request.json:
+			setObject["nome"] = request.json["nome"]
 
-		if 'participantes' not in request.json:
-			return {'message': 'Os participantes do projeto são obrigatórios.'}, 200
+		if 'descricao' in request.json:
+			setObject["descricao"] = request.json["descricao"]
 
-		nome = request.json["nome"]
-		descricao = request.json["descricao"]
-		participantes = request.json["participantes"]
+		if 'participantes' in request.json:
+			setObject["participantes"] = request.json["participantes"]
 
 		self.db.projetos.update_one(
 			{"_id": id},
-			{"$set": 
-				{
-					"nome": nome,
-					"descricao": descricao,
-					"participantes": participantes
-				}
-			}
+			{"$set": setObject}
 		)
 
 		return {'message': 'O projeto foi atualizado com sucesso.'}, 200
