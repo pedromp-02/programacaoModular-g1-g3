@@ -1,61 +1,59 @@
+from flask import request, jsonify
+from flask_restful import Resource
+from modulo_db.dbClass import dbClass
 import modulo_cripto
 
 # Classe principal do módulo
-class loginClass:
+class loginClass(Resource):
 	# Armazena a conexão com o banco de dados
-	db = {}
+	db = None
 
-	# Armazena os dados do usuário logado
-	usuario = {}
-
-	def __init__(self, dbConn):
+	def __init__(self):
+		# Cria a conexão com o banco de dados
 		try:
-			self.db = dbConn
-	
+			self.db = dbClass.getDatabase()
 		except Exception as ex:
-			print("Ocorreu um erro na na função __init__ da classe loginClass")
 			print(ex)
+		
+		super().__init__()
 
-	# Função responsável por efetuar a tentativa de login
-	def tryLogIn(self, email, senha):
-		try:
-			# Realiza a busca do usuário
-			usuarios = self.db.usuarios.find({"email": email}).limit(1)
+	def post(self):
+		if self.db == None:
+			return {'message': 'Ocorreu um erro interno. Tente novamente mais tarde.'}, 500
 
-			# Se retornar uma quantidade de usuários diferente de 1, loguin falhou
-			for usuario in usuarios:
-				# Obtém os dados para verificar a senha
-				senhaUsuarioNoBanco = usuario["senha"]
-				saltUsuarioNoBanco = usuario["salt"]
+		if 'email' not in request.json:
+			return {'message': 'O e-mail é obrigatório.'}, 200
 
-				# Criptografa a senha digitada pelo usuário
-				senhaCriptografada = modulo_cripto.generate_hashed_password('sha256', senha, saltUsuarioNoBanco, 100, 64)
+		if 'senha' not in request.json:
+			return {'message': 'A senha é obrigatória.'}, 200
 
-				# Se senhas forem diferentes
-				if senhaUsuarioNoBanco != senhaCriptografada:
-					return False
+		email = request.json["email"]
+		senha = request.json["senha"]
 
-				# Se as senhas forem iguais, remove a senha e o salt do objeto
-				else:
-					usuario.pop("senha")
-					usuario.pop("salt")
+		# Realiza a busca do usuário
+		usuarios = self.db.usuarios.find({"email": email}).limit(1)
 
-				# Guarda os dados do usuário logado
-				self.usuario = usuario
+		# Se retornar uma quantidade de usuários diferente de 1, loguin falhou
+		for usuario in usuarios:
+			# Obtém os dados para verificar a senha
+			senhaUsuarioNoBanco = usuario["senha"]
+			saltUsuarioNoBanco = usuario["salt"]
 
-				return True
-			
-			return False
-	
-		except Exception as ex:
-			print("Ocorreu um erro na na função tryLogIn da classe loginClass")
-			print(ex)
+			# Criptografa a senha digitada pelo usuário
+			senhaCriptografada = modulo_cripto.generate_hashed_password('sha256', senha, saltUsuarioNoBanco, 100, 64)
 
-	# Função responsável por retornar o usuário logado
-	def getUsuario(self):
-		try:
-			return self.usuario
+			# Se senhas forem diferentes
+			if senhaUsuarioNoBanco != senhaCriptografada:
+				return {'message': 'As credenciais de acesso não são válidas.'}, 401
 
-		except Exception as ex:
-			print("Ocorreu um erro na na função getUsuario da classe loginClass")
-			print(ex)
+			# Se as senhas forem iguais, remove a senha e o salt do objeto
+			else:
+				usuario.pop("senha")
+				usuario.pop("salt")
+
+			# Guarda os dados do usuário logado
+			self.usuario = usuario
+
+			return {'message': 'Usuário e senha OK.'}, 200
+		
+		return {'message': 'As credenciais de acesso não são válidas.'}, 401

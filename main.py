@@ -1,105 +1,119 @@
 from getpass import getpass
+
+from flask import Flask, request, jsonify
+from flask_restful import Resource, Api
+from json import dumps
+
 from modulo_db.dbClass import dbClass
 from modulo_login.loginClass import loginClass
 from modulo_funcionarios.funcionariosClass import funcionariosClass
 from modulo_projetos.projetosClass import projetosClass
 
-# Mensagem de bem vindo ao sistema
-print("Sistema de gestão de RH (v0.0.1)")
-print("---------------------------------------------------")
+app = Flask(__name__)
+api = Api(app)
 
-# Cria a conexão com o banco de dados
-dbClass = dbClass()
+# Adicionando as controladores a API
+api.add_resource(loginClass, '/login')
 
-try:
-    dbConn = dbClass.getDatabase()
+if __name__ == '__main__':
+    app.run()
 
-except Exception as ex:
-	print("Ocorreu um erro na na função getDatabase da classe dbClass")
-	print(ex)
-	exit()
+# # Mensagem de bem vindo ao sistema
+# print("Sistema de gestão de RH (v0.0.1)")
+# print("---------------------------------------------------")
 
-# Cria o módulo de login
-loginClass = loginClass(dbConn)
+# # Cria a conexão com o banco de dados
+# dbClass = dbClass()
 
-# Sistema de login
-usuario = {}
+# try:
+#     dbConn = dbClass.getDatabase()
 
-while True:
-    print("\nPor favor, faça login para continuar:")
+# except Exception as ex:
+# 	print("Ocorreu um erro na na função getDatabase da classe dbClass")
+# 	print(ex)
+# 	exit()
 
-    # TODO: O módulo de senha do grupo 1 deve entrar aqui na obtenção dos dados do usuário
+# # Cria o módulo de login
+# loginClass = loginClass(dbConn)
 
-    email = input("\t-> Email: ")
-    senha = getpass("\t-> Senha: ")
+# # Sistema de login
+# usuario = {}
 
-    # Efetua a tentativa de login
-    if loginClass.tryLogIn(email, senha):
-        # Obtém o usuário logado
-        usuario = loginClass.getUsuario()
+# while True:
+#     print("\nPor favor, faça login para continuar:")
 
-        # Finaliza o loop
-        print("\n---------------------------------------------------")
-        break
+#     # TODO: O módulo de senha do grupo 1 deve entrar aqui na obtenção dos dados do usuário
 
-    print("\tO email ou senha informados não é válido.")
+#     email = input("\t-> Email: ")
+#     senha = getpass("\t-> Senha: ")
+
+#     # Efetua a tentativa de login
+#     if loginClass.tryLogIn(email, senha):
+#         # Obtém o usuário logado
+#         usuario = loginClass.getUsuario()
+
+#         # Finaliza o loop
+#         print("\n---------------------------------------------------")
+#         break
+
+#     print("\tO email ou senha informados não é válido.")
 
 	
-# Se chegou até aqui, é por que o usuário efetuou o login com sucesso
-print("Bem vindo(a) ao sistema, " + usuario["nome"] + "\n")
+# # Se chegou até aqui, é por que o usuário efetuou o login com sucesso
+# print("Bem vindo(a) ao sistema, " + usuario["nome"] + "\n")
 
-# Cria todos os módulos da aplicação
-# Os novos módulos devem ser adicionados após essa linha
-funcionariosClass = funcionariosClass(dbConn)
-projetosClass = projetosClass(dbConn)
+# # Cria todos os módulos da aplicação
+# # Os novos módulos devem ser adicionados após essa linha
+# funcionariosClass = funcionariosClass(dbConn)
+# projetosClass = projetosClass(dbConn)
 
-# Exibe os módulos e suas opções
-# Os novos módulos devem ser adicionados nessa lista
-opcoes = [{
-    "number": 1,
-    "descricao": funcionariosClass.getModuleDescription()
-}, {
-    "number": 2,
-    "descricao": projetosClass.getModuleDescription()
-}, {
-    "number": 9,
-    "descricao": "Finalizar o programa"
-}]
+# # Exibe os módulos e suas opções
+# # Os novos módulos devem ser adicionados nessa lista
+# opcoes = [{
+#     "number": 1,
+#     "descricao": funcionariosClass.getModuleDescription()
+# }, {
+#     "number": 2,
+#     "descricao": projetosClass.getModuleDescription()
+# }, {
+#     "number": 9,
+#     "descricao": "Finalizar o programa"
+# }]
 
-# Cria o array de opcoes com base no dicionário acima
-opcoesNum = []
+# # Cria o array de opcoes com base no dicionário acima
+# opcoesNum = []
 
-for opcao in opcoes:
-    opcoesNum.append(opcao["number"])
+# for opcao in opcoes:
+#     opcoesNum.append(opcao["number"])
 
-# Itera para obter as opções
-while True:
-    print("Por favor, escolha uma opção:")
+# # Itera para obter as opções
+# while True:
+#     print("Por favor, escolha uma opção:")
 
-    # Exibe as opções disponíveis
-    for opcao in opcoes:
-        print("\t[" + str(opcao["number"]) + "] => " + opcao["descricao"])
+#     # Exibe as opções disponíveis
+#     for opcao in opcoes:
+#         print("\t[" + str(opcao["number"]) + "] => " + opcao["descricao"])
 
-    # Obtém a opção digitada
-    opcaoSelecionada = -1
+#     # Obtém a opção digitada
+#     opcaoSelecionada = -1
 
-    # Se ocorrer algum erro no parse para int, opcaoSelecionada = -1
-    try:
-        opcaoSelecionada = int(input("\n> "))
-    except:
-        opcaoSelecionada = -1
+#     # Se ocorrer algum erro no parse para int, opcaoSelecionada = -1
+#     try:
+#         opcaoSelecionada = int(input("\n> "))
+#     except:
+#         opcaoSelecionada = -1
 
-    # Valida a opção selecionada
-    if opcaoSelecionada not in opcoesNum:
-        print("Opção não encontrada.\n")
-        continue
+#     # Valida a opção selecionada
+#     if opcaoSelecionada not in opcoesNum:
+#         print("Opção não encontrada.\n")
+#         continue
 
-    # Switch das opções
-    if opcaoSelecionada == 1:
-        funcionariosClass.showOptions(usuario["email"], usuario["cargo"])
+#     # Switch das opções
+#     if opcaoSelecionada == 1:
+#         funcionariosClass.showOptions(usuario["email"], usuario["cargo"])
 
-    elif opcaoSelecionada == 2:
-        projetosClass.showOptions(usuario["cargo"])
+#     elif opcaoSelecionada == 2:
+#         projetosClass.showOptions(usuario["cargo"])
 
-    else:
-        exit()
+#     else:
+#         exit()
