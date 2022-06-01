@@ -1,24 +1,84 @@
+from flask import request
+from flask_restful import Resource
+from modulo_db.dbClass import dbClass
 import modulo_cripto
+import datetime
+import jwt
+
+class userModel():
+	@staticmethod
+	def encode_auth_token(cargo, id):
+		try:
+			payload = {
+				'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=60),
+				'sub': {
+					'cargo': cargo,
+					'id': id
+				}
+			}
+
+			return jwt.encode(payload, 'chaveSecreta', algorithm="HS256")
+
+		except Exception as e:
+			print(e)
+			return None
+
+	@staticmethod
+	def decode_auth_token(auth_token):
+		try:
+			return jwt.decode(auth_token, 'chaveSecreta', algorithms=["HS256"])
+
+		except Exception as e:
+			return 'Token inválido. Faça login novamente.'
+
+	@staticmethod
+	def isUserLogado(req):
+		auth_header = req.headers.get('Authorization')
+
+		if auth_header:
+			auth_token = auth_header.split(" ")[1]
+		else:
+			auth_token = ''
+
+		if auth_token:
+			resp = userModel.decode_auth_token(auth_token)
+
+			if isinstance(resp, str):
+				return {'message': resp}, 401
+
+			return resp["sub"]
+			
+		return {'message': 'O Token é obrigatório'}, 401
+
 
 # Classe principal do módulo
-class loginClass:
+class loginClass(Resource):
 	# Armazena a conexão com o banco de dados
-	db = {}
+	db = None
 
-	# Armazena os dados do usuário logado
-	usuario = {}
-
-	def __init__(self, dbConn):
+	def __init__(self):
+		# Cria a conexão com o banco de dados
 		try:
-			self.db = dbConn
-	
+			self.db = dbClass.getDatabase()
 		except Exception as ex:
-			print("Ocorreu um erro na na função __init__ da classe loginClass")
 			print(ex)
+		
+		super().__init__()
 
-	# Função responsável por efetuar a tentativa de login
-	def tryLogIn(self, email, senha):
+	def post(self):
 		try:
+			if self.db == None:
+				return {'message': 'Ocorreu um erro interno. Tente novamente mais tarde.'}, 500
+
+			if 'email' not in request.json:
+				return {'message': 'O e-mail é obrigatório.'}, 200
+
+			if 'senha' not in request.json:
+				return {'message': 'A senha é obrigatória.'}, 200
+
+			email = request.json["email"]
+			senha = request.json["senha"]
+
 			# Realiza a busca do usuário
 			usuarios = self.db.usuarios.find({"email": email}).limit(1)
 
@@ -33,29 +93,30 @@ class loginClass:
 
 				# Se senhas forem diferentes
 				if senhaUsuarioNoBanco != senhaCriptografada:
-					return False
+					return {'message': 'As credenciais de acesso não são válidas.'}, 401
 
 				# Se as senhas forem iguais, remove a senha e o salt do objeto
 				else:
 					usuario.pop("senha")
 					usuario.pop("salt")
 
-				# Guarda os dados do usuário logado
-				self.usuario = usuario
+				# Gera o token de autenticação
+				auth_token = userModel.encode_auth_token(usuario["cargo"], usuario["_id"])
 
-				return True
-			
-			return False
-	
+				if auth_token == None:
+					return {'message': 'Ocorreu um erro interno. Tente novamente mais tarde.'}, 500
+
+				# Cria a resposta
+				response = {
+					'message': 'OK.',
+					'nome': usuario["nome"],
+					'cargo': usuario["cargo"],
+					'auth': auth_token
+				}
+
+				return response, 200
+		
+			return {'message': 'As credenciais de acesso não são válidas.'}, 401
+
 		except Exception as ex:
-			print("Ocorreu um erro na na função tryLogIn da classe loginClass")
-			print(ex)
-
-	# Função responsável por retornar o usuário logado
-	def getUsuario(self):
-		try:
-			return self.usuario
-
-		except Exception as ex:
-			print("Ocorreu um erro na na função getUsuario da classe loginClass")
-			print(ex)
+			return {'message': 'Ocorreu um erro interno. Tente novamente mais tarde.'}, 500

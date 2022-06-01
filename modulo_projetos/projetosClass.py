@@ -1,262 +1,115 @@
+from flask import request
+from flask_restful import Resource
+from modulo_db.dbClass import dbClass
+from modulo_login.loginClass import userModel
+from bson.json_util import dumps, loads
 from os import urandom
 
 # Classe principal do módulo
-class projetosClass:
+class projetosClass(Resource):
 	# Armazena a conexão com o banco de dados
-	db = {}
+	db = None
 
-	# Número do cargo que possui permissão de acesso a esse módulo
-	cargoNum = 9
-
-	# Função responsável por criar a classe. 
-	# Atribui a conexão a uma variável local para ser usada no módulo
-	def __init__(self, dbConn):
+	def __init__(self):
+		# Cria a conexão com o banco de dados
 		try:
-			self.db = dbConn
-	
+			self.db = dbClass.getDatabase()
 		except Exception as ex:
-			print("Ocorreu um erro na na função __init__ da classe projetosClass")
 			print(ex)
+		
+		super().__init__()
 
-	# Função que retorna para a main a descrição do módulo
-	def getModuleDescription(self):
-		return "Controle dos projetos"
-
-	# Função responsável por exibir uma lista de opções para o usuário
-	def exibeOpcoesEPegaDigitada(self, listaDeOpcoes):
-		for i in range(len(listaDeOpcoes)):
-			print(f'\t[{i+1}] => {listaDeOpcoes[i]} ')
-
-		print('\t[9] => Voltar')
-
-		opcaoDigitada = int(input("\n> "))
-
-		if opcaoDigitada == 9:
-			return opcaoDigitada
-
-		elif opcaoDigitada > len(listaDeOpcoes) or opcaoDigitada < 0:
-			print('Opção não encontrada.\n')
-			self.exibeOpcoesEPegaDigitada(listaDeOpcoes)
-
-			return
-
-		return opcaoDigitada
-
-	# Função responsável por exibir as opções do módulo
-	# Exibida para: Todos
-	def showOptions(self, cargo):
+	def delete(self, id):
 		try:
-			# Atualiza o cargo do usuário
-			self.cargo = cargo
+			usuarioLogado = userModel.isUserLogado(request)
 
-			if cargo == self.cargoNum:
-				lista_op = ['Incluir um projeto', 'Excluir um projeto', 'Atualizar um projeto', 'Listar os projetos']
-				
-				while True:
-					print("\n[MOD PROJETOS] - Por favor, escolha uma opção:")
-					op = self.exibeOpcoesEPegaDigitada(lista_op)
+			if usuarioLogado["cargo"] != 9:
+				return {'message': 'Você não possui permissão para remover um projeto.'}, 401
 
-					if op == 1:
-						self.inclui()
-					elif op == 2:
-						self.remove()
-					elif op == 3:
-						self.atualiza()
-					elif op == 4:
-						self.lista()
-					elif op == 9:
-						return
-				
-			else:
-				print('Você não tem permissão para tal ferramenta.')
-	
-		except Exception as ex:
-			print("Ocorreu um erro na na função showOptions da classe projetosClass")
-			print(ex)
+			if not self.busca_projeto(id):
+				return {'message': 'O projeto informado não foi encontrado.'}, 200
 
-	# Função responsável por verificar se um email de usuário já existe
-	def busca_funcionario_email(self, email):
-		try:
-			for user in self.db.usuarios.find():
-				if (user['email'] == email):
-					return True
-	
-			return False
+			self.db.projetos.delete_one({"_id": id})
+			return {'message': 'Projeto removido com sucesso.'}, 200
 
 		except Exception as ex:
-			print("Ocorreu um erro na na função showOptions da classe projetosClass")
-			print(ex)
+			return {'message': 'Ocorreu um erro interno. Tente novamente mais tarde.'}, 500
+
+	def get(self, id):
+		try:
+			return loads(dumps(list(self.db.projetos.find())))
+		
+		except Exception as ex:
+			return {'message': 'Ocorreu um erro interno. Tente novamente mais tarde.'}, 500
+
+	def put(self, id):
+		try:
+			usuarioLogado = userModel.isUserLogado(request)
+
+			if usuarioLogado["cargo"] != 9:
+				return {'message': 'Você não possui permissão para incluir um projeto.'}, 401
+
+			if 'nome' not in request.json:
+				return {'message': 'O nome do projeto é obrigatório.'}, 200
+
+			if 'descricao' not in request.json:
+				return {'message': 'A descrição do projeto é obrigatória.'}, 200
+
+			if 'participantes' not in request.json:
+				return {'message': 'Os participantes do projeto são obrigatórios.'}, 200
+
+			id = urandom(5).hex()
+			nome = request.json["nome"]
+			descricao = request.json["descricao"]
+			participantes = request.json["participantes"]
+
+			self.db.projetos.insert_one({
+				'_id': id,
+				'nome': nome,
+				'descricao': descricao,
+				'participantes': participantes
+			})
+
+			return {'message': 'O projeto foi inserido com sucesso.', 'id': id}, 200
+
+		except Exception as ex:
+			return {'message': 'Ocorreu um erro interno. Tente novamente mais tarde.'}, 500
+
+	def post(self, id):
+		try:
+			usuarioLogado = userModel.isUserLogado(request)
+
+			if usuarioLogado["cargo"] != 9:
+				return {'message': 'Você não possui permissão para atualizar um projeto.'}, 401
+
+			if not self.busca_projeto(id):
+				return {'message': 'O projeto informado não foi encontrado.'}, 200
+
+			setObject = {}
+
+			if 'nome' in request.json:
+				setObject["nome"] = request.json["nome"]
+
+			if 'descricao' in request.json:
+				setObject["descricao"] = request.json["descricao"]
+
+			if 'participantes' in request.json:
+				setObject["participantes"] = request.json["participantes"]
+
+			self.db.projetos.update_one(
+				{"_id": id},
+				{"$set": setObject}
+			)
+
+			return {'message': 'O projeto foi atualizado com sucesso.'}, 200
+
+		except Exception as ex:
+			return {'message': 'Ocorreu um erro interno. Tente novamente mais tarde.'}, 500
 
 	# Função responsável por verificar se o identificador de projeto existe
 	def busca_projeto(self, id):
-		try:
-			for projeto in self.db.projetos.find():
-				if (projeto['_id'] == id):
-					return projeto
-	
-			return False
+		for projeto in self.db.projetos.find():
+			if (projeto['_id'] == id):
+				return projeto
 
-		except Exception as ex:
-			print("Ocorreu um erro na na função showOptions da classe projetosClass")
-			print(ex)
-
-	# Função responsável por incluir um projeto
-	def inclui(self):
-		try:
-			# Valida se o usuário logado possui permissão
-			if self.cargo != self.cargoNum:
-				print("Você não possui permissão para incluir um novo projeto.")
-				
-				return
-			
-			id = urandom(5).hex()
-			nome = input("Nome do projeto: ")
-			descricao = input("Descrição do projeto: ")
-			participantes = []
-
-			# Obtém os participantes do projeto
-			while True:
-				email = input("Digite o email do funcionário a ser adicionado no projeto: ")
-
-				if self.busca_funcionario_email(email):
-					participantes.append(email)
-				
-				else:
-					print("O email informado não é de nenhum funcionário")
-					continue
-
-				opcao = input("Deseja adicionar mais um participante (S, N): ")
-
-				if opcao == 'S' or opcao == 's':
-					continue
-
-				break
-
-			# Inclui o novo projeto no banco de dados
-			self.db.projetos.insert_one({
-				'_id': id,
-	        	'nome': nome,
-	        	'descricao': descricao,
-	        	'participantes': participantes
-	        })
-	    	
-			print('\nO projeto foi cadastrado com sucesso!\n')
-			return
-
-		except Exception as ex:
-			print("Ocorreu um erro na na função inclui da classe funcionariosClass")
-			print(ex)
-
-	# Função responsável por remover um projeto
-	def remove(self):
-		try:
-			# Valida se o usuário logado possui permissão
-			if self.cargo != self.cargoNum:
-				print("Você não possui permissão para remover um projeto.")
-				return
-		
-			id = input("Digite o identificador do projeto que deseja excluir: ")
-			projeto = self.busca_projeto(id)
-
-			if projeto != False:
-				self.db.projetos.delete_one({"_id": id})
-				print('\Projeto removido com sucesso!\n')
-
-				return
-	
-			print('\Projeto não encontrado!\n')
-
-		except Exception as ex:
-			print("Ocorreu um erro na na função remove da classe projetosClass")
-			print(ex)
-
-	# Função responsável por atualizar os dados de um usuário
-	def atualiza(self):
-		try:
-			# Valida se o usuário logado possui permissão
-			if self.cargo != self.cargoNum:
-				print("Você não possui permissão para atualizar um projeto.")
-				return
-
-			id = input("Digite o identificador do projeto que deseja excluir: ")
-			projeto = self.busca_projeto(id)
-			
-			if projeto != False:
-				texto = "Digite qual campo você deseja atualizar"
-				campos = ["nome", "descricao", "participantes"]
-				interface = ["Nome", "Descrição", "Participantes"]
-	
-				while True:
-					print(texto)
-
-					escolha = self.exibeOpcoesEPegaDigitada(interface)
-
-					if escolha == 9:
-						break
-
-					if escolha != 3:
-						atualizacao = input("Qual o novo valor do campo %s? "%campos[escolha-1])
-
-						# Atualiza os dados
-						self.db.projetos.update_one(
-							{"_id": id},
-							{"$set": {campos[escolha-1]: atualizacao}}
-						)
-
-					# Se for para atualizar os participantes
-					else:
-						participantes = projeto["participantes"]
-						
-						while True:
-							email = input("Digite o email do participante. Caso ele já esteja no projeto, será removido. Caso contrário, será adicionado: ")
-
-							if self.busca_funcionario_email(email):
-								if email in participantes:
-									participantes.remove(email)
-								else:
-									participantes.append(email)
-
-								break
-							
-							else:
-								print("O email informado não é de nenhum funcionário")
-								continue
-
-						# Atualiza os participantes do projeto
-						self.db.projetos.update_one(
-							{"_id": id},
-							{"$set": {"participantes": participantes}}
-						)
-					
-					print('\nAtualização feita com sucesso!\n')
-				return
-	
-			print('\Projeto não encontrado!\n')
-
-		except Exception as ex:
-			print("Ocorreu um erro na na função atualiza da classe funcionariosClass")
-			print(ex)
-
-	# Função responsavel para mostar as opções de listagem de funcionários.
-	def lista(self):
-		try:
-			if self.cargo != self.cargoNum:
-				print("Você não possui permissão para visualizar os projetos.")
-				return
-
-			for projeto in self.db.projetos.find():
-				print(f"\nIdentificador: {projeto['_id']}")
-				print(f"Nome: {projeto['nome']}")
-				print(f"Descrição: {projeto['descricao']}")
-				print(f"Participantes:")
-
-				for emailParticipante in projeto['participantes']:
-					for usuarioParticipante in self.db.usuarios.find({'email': emailParticipante}):
-						print(f"\t-> {usuarioParticipante['nome']} ({emailParticipante})")
-
-				print('')
-				print('-='*20)
-					
-		except Exception as ex:
-			print("Ocorreu um erro na na função lista Funcionarios da classe funcionariosClass")
-			print(ex)
+		return False
