@@ -1,3 +1,4 @@
+from crypt import methods
 from getpass import getpass
 
 from flask import Flask, request, jsonify
@@ -14,6 +15,7 @@ api = Api(app)
 
 # Adicionando as controladores a API
 api.add_resource(loginClass, '/login')
+api.add_resource(projetosClass, '/projetos/<id>')
 
 if __name__ == '__main__':
     app.run()

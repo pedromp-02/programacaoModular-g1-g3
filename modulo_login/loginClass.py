@@ -6,30 +6,28 @@ import datetime
 import jwt
 
 class userModel():
-    @staticmethod
-    def encode_auth_token(cargo):
-        try:
-            payload = {
-                'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=5),
-                'iat': datetime.datetime.utcnow(),
-                'sub': cargo
-            }
+	@staticmethod
+	def encode_auth_token(cargo):
+		try:
+			payload = {
+				'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=60),
+				'sub': cargo
+			}
 
-            return jwt.encode(payload, 'TOKEN_SECRETO', algorithm='HS256')
-        except Exception as e:
-            return e
+			return jwt.encode(payload, 'chaveSecreta', algorithm="HS256")
 
-    @staticmethod
-    def decode_auth_token(auth_token):
-        try:
-            payload = jwt.decode(auth_token, 'TOKEN_SECRETO')
-            return payload['sub']
+		except Exception as e:
+			print(e)
+			return None
 
-        except jwt.ExpiredSignatureError:
-            return 'Signature expired. Please log in again.'
+	@staticmethod
+	def decode_auth_token(auth_token):
+		try:
+			return jwt.decode(auth_token, 'chaveSecreta', algorithms=["HS256"])
 
-        except jwt.InvalidTokenError:
-            return 'Invalid token. Please log in again.'
+		except Exception as e:
+			return 'Token inválido. Faça login novamente.'
+
 
 # Classe principal do módulo
 class loginClass(Resource):
@@ -81,6 +79,11 @@ class loginClass(Resource):
 
 			# Gera o token de autenticação
 			auth_token = userModel.encode_auth_token(usuario["cargo"])
+
+			if auth_token == None:
+				return {'message': 'Ocorreu um erro interno. Tente novamente mais tarde.'}, 500
+
+			# Cria a resposta
 			response = {
 				'message': 'OK.',
 				'auth': auth_token
