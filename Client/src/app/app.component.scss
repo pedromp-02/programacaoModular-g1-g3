@@ -62,6 +62,11 @@
             }
         }
     }
+
+    &.s2 .modal-container {
+        height: 400px;
+        top: calc(50% - 200px);
+    }
 }
 
 #main-menu {

@@ -49,18 +49,69 @@
     </div>
 </div>
 
+<div class="modal s2" *ngIf="userIsLogged && showModalProjetos">
+    <div class="modal-background" (click)="hideModalProjetos()"></div>
+
+    <div class="modal-container">
+        <h1>{{ modalProjetos.title }}</h1>
+
+        <div class="form">
+            <div class="line">
+                <mat-form-field appearance="outline">
+                    <mat-label>Nome</mat-label>
+                    <input matInput placeholder="Nome" [(ngModel)]="modalProjetosNome">
+                    <mat-hint>* Obrigatório</mat-hint>
+                </mat-form-field>
+            </div>
+
+            <div class="line">
+                <mat-form-field appearance="outline">
+                    <mat-label>Descrição</mat-label>
+                    <input matInput placeholder="Descrição" [(ngModel)]="modalProjetosDescricao">
+                    <mat-hint>* Obrigatório</mat-hint>
+                </mat-form-field>
+            </div>
+
+            <div class="line">
+                <mat-form-field appearance="outline">
+                    <mat-label>Participantes</mat-label>
+                    <input matInput placeholder="Participantes" [(ngModel)]="modalProjetosParticipante">
+                    <mat-hint>* Obrigatório</mat-hint>
+                </mat-form-field>
+            </div>
+
+            <div class="line">
+                <button mat-raised-button color="primary" (click)="actionModalProjetos(modalProjetos.role)">{{ modalProjetos.role === 'add' ? 'Adicionar' : 'Salvar' }}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="content" *ngIf="userIsLogged">
     <div class="container">
         <div class="title">
             <h1>{{ componentInView === 'PROJETOS' ? 'Projetos' : "Funcionários" }}</h1>       
-            <button mat-raised-button>Adicionar</button>
+            <button mat-raised-button *ngIf="userData.cargo === 9" (click)="openModalAdd()">Adicionar</button>
         </div>
 
         <div class="table" *ngIf="!componentIsLoading">
             <table mat-table [dataSource]="gridData" #grid matSort>
                 <ng-container [matColumnDef]="column.name" *ngFor="let column of gridColumns">
                     <th mat-header-cell mat-sort-header *matHeaderCellDef>{{ column.display }}</th>
-                    <td mat-cell *matCellDef="let element">{{ element[column.name] }}</td>
+
+                    <td mat-cell *matCellDef="let element">
+                        <span *ngIf="column.name !== 'controls'">{{ element[column.name] }}</span>
+
+                        <div *ngIf="column.name === 'controls'">
+                            <button mat-icon-button (click)="openModalEdit(element._id)">
+                                <mat-icon>edit</mat-icon>
+                            </button>
+
+                            <button mat-icon-button (click)="gridControlRemoveClick(element._id)">
+                                <mat-icon>remove_circle</mat-icon>
+                            </button>
+                        </div>
+                    </td>
                 </ng-container>
         
                 <tr mat-header-row *matHeaderRowDef="gridColumnsToDisplay"></tr>
