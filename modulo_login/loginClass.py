@@ -1,7 +1,35 @@
-from flask import request, jsonify
+from flask import request
 from flask_restful import Resource
 from modulo_db.dbClass import dbClass
 import modulo_cripto
+import datetime
+import jwt
+
+class userModel():
+    @staticmethod
+    def encode_auth_token(cargo):
+        try:
+            payload = {
+                'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=5),
+                'iat': datetime.datetime.utcnow(),
+                'sub': cargo
+            }
+
+            return jwt.encode(payload, 'TOKEN_SECRETO', algorithm='HS256')
+        except Exception as e:
+            return e
+
+    @staticmethod
+    def decode_auth_token(auth_token):
+        try:
+            payload = jwt.decode(auth_token, 'TOKEN_SECRETO')
+            return payload['sub']
+
+        except jwt.ExpiredSignatureError:
+            return 'Signature expired. Please log in again.'
+
+        except jwt.InvalidTokenError:
+            return 'Invalid token. Please log in again.'
 
 # Classe principal do módulo
 class loginClass(Resource):
@@ -51,9 +79,13 @@ class loginClass(Resource):
 				usuario.pop("senha")
 				usuario.pop("salt")
 
-			# Guarda os dados do usuário logado
-			self.usuario = usuario
+			# Gera o token de autenticação
+			auth_token = userModel.encode_auth_token(usuario["cargo"])
+			response = {
+				'message': 'OK.',
+				'auth': auth_token
+			}
 
-			return {'message': 'Usuário e senha OK.'}, 200
+			return response, 200
 		
 		return {'message': 'As credenciais de acesso não são válidas.'}, 401
