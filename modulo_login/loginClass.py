@@ -63,51 +63,55 @@ class loginClass(Resource):
 		super().__init__()
 
 	def post(self):
-		if self.db == None:
-			return {'message': 'Ocorreu um erro interno. Tente novamente mais tarde.'}, 500
-
-		if 'email' not in request.json:
-			return {'message': 'O e-mail é obrigatório.'}, 200
-
-		if 'senha' not in request.json:
-			return {'message': 'A senha é obrigatória.'}, 200
-
-		email = request.json["email"]
-		senha = request.json["senha"]
-
-		# Realiza a busca do usuário
-		usuarios = self.db.usuarios.find({"email": email}).limit(1)
-
-		# Se retornar uma quantidade de usuários diferente de 1, loguin falhou
-		for usuario in usuarios:
-			# Obtém os dados para verificar a senha
-			senhaUsuarioNoBanco = usuario["senha"]
-			saltUsuarioNoBanco = usuario["salt"]
-
-			# Criptografa a senha digitada pelo usuário
-			senhaCriptografada = modulo_cripto.generate_hashed_password('sha256', senha, saltUsuarioNoBanco, 100, 64)
-
-			# Se senhas forem diferentes
-			if senhaUsuarioNoBanco != senhaCriptografada:
-				return {'message': 'As credenciais de acesso não são válidas.'}, 401
-
-			# Se as senhas forem iguais, remove a senha e o salt do objeto
-			else:
-				usuario.pop("senha")
-				usuario.pop("salt")
-
-			# Gera o token de autenticação
-			auth_token = userModel.encode_auth_token(usuario["cargo"])
-
-			if auth_token == None:
+		try:
+			if self.db == None:
 				return {'message': 'Ocorreu um erro interno. Tente novamente mais tarde.'}, 500
 
-			# Cria a resposta
-			response = {
-				'message': 'OK.',
-				'auth': auth_token
-			}
+			if 'email' not in request.json:
+				return {'message': 'O e-mail é obrigatório.'}, 200
 
-			return response, 200
+			if 'senha' not in request.json:
+				return {'message': 'A senha é obrigatória.'}, 200
+
+			email = request.json["email"]
+			senha = request.json["senha"]
+
+			# Realiza a busca do usuário
+			usuarios = self.db.usuarios.find({"email": email}).limit(1)
+
+			# Se retornar uma quantidade de usuários diferente de 1, loguin falhou
+			for usuario in usuarios:
+				# Obtém os dados para verificar a senha
+				senhaUsuarioNoBanco = usuario["senha"]
+				saltUsuarioNoBanco = usuario["salt"]
+
+				# Criptografa a senha digitada pelo usuário
+				senhaCriptografada = modulo_cripto.generate_hashed_password('sha256', senha, saltUsuarioNoBanco, 100, 64)
+
+				# Se senhas forem diferentes
+				if senhaUsuarioNoBanco != senhaCriptografada:
+					return {'message': 'As credenciais de acesso não são válidas.'}, 401
+
+				# Se as senhas forem iguais, remove a senha e o salt do objeto
+				else:
+					usuario.pop("senha")
+					usuario.pop("salt")
+
+				# Gera o token de autenticação
+				auth_token = userModel.encode_auth_token(usuario["cargo"])
+
+				if auth_token == None:
+					return {'message': 'Ocorreu um erro interno. Tente novamente mais tarde.'}, 500
+
+				# Cria a resposta
+				response = {
+					'message': 'OK.',
+					'auth': auth_token
+				}
+
+				return response, 200
 		
-		return {'message': 'As credenciais de acesso não são válidas.'}, 401
+			return {'message': 'As credenciais de acesso não são válidas.'}, 401
+
+		except Exception as ex:
+			return {'message': 'Ocorreu um erro interno. Tente novamente mais tarde.'}, 500
