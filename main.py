@@ -1,8 +1,8 @@
 from getpass import getpass
-from db.dbClass import dbClass
-from login.loginClass import loginClass
-from funcionarios.funcionariosClass import funcionariosClass
-from projetos.projetosClass import projetosClass
+from modulo_db.dbClass import dbClass
+from modulo_login.loginClass import loginClass
+from modulo_funcionarios.funcionariosClass import funcionariosClass
+from modulo_projetos.projetosClass import projetosClass
 
 # Mensagem de bem vindo ao sistema
 print("Sistema de gestão de RH (v0.0.1)")
