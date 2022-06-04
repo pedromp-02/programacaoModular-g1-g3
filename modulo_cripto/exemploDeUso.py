@@ -10,8 +10,8 @@ falsepassword = password + 'a' #senha digitada pelo usuario no login de forma er
 type = 'sha256' 
 iterations = 100 
 dklen = 64
-salt1 =  b70c4693d1d8d802971c154e731eb544 # grupo 1 cria salt com 32 caracteres
-salt2 =  9a1ff6597127ae6e485cc1ff6a118fc7 #grupo 1 cria salt com 32 caracteres
+salt1 =  "b70c4693d1d8d802971c154e731eb544" # grupo 1 cria salt com 32 caracteres
+salt2 =  "9a1ff6597127ae6e485cc1ff6a118fc7" #grupo 1 cria salt com 32 caracteres
 
 
 
