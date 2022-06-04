@@ -37,3 +37,4 @@ jobs:
     - name: Test with pytest - Erros na Integração
       run: |
         pytest teste.py
+        pytest modulo_cripto/exemploDeUso.py
