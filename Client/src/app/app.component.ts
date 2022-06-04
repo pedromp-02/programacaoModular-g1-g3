@@ -92,8 +92,10 @@ export class AppComponent {
 
         if (loginData.auth !== null && loginData.auth !== undefined && typeof loginData.auth === 'string') {
             const data = new Date();
+            const jwt = loginData.auth === undefined ? '' : loginData.auth.toString();
 
             this.userData = loginData;
+            this.appService.setJWT(jwt);
             this.userLoginData = `${data.getHours()}:${data.getMinutes()}`
 
             this.userIsLogged = true;
@@ -259,12 +261,11 @@ export class AppComponent {
      * Ação da modal de projetos
      */
     public async actionModalProjetos(role: 'add' | 'edit') {
-        const jwt = this.userData.auth === undefined ? '' : this.userData.auth.toString();
         let message: string;
         let data: any;
 
         if (role === 'add') {
-            data = await this.appService.addProjeto(jwt, this.modalProjetosNome, this.modalProjetosDescricao, [this.modalProjetosParticipante]);
+            data = await this.appService.addProjeto(this.modalProjetosNome, this.modalProjetosDescricao, [this.modalProjetosParticipante]);
             
             if (data.hasOwnProperty('status')) {
                 message = data.error.message;
@@ -274,7 +275,7 @@ export class AppComponent {
             }
         }
         else {
-            data = await this.appService.editProjeto(jwt, this.modalProjetosId, this.modalProjetosNome, this.modalProjetosDescricao, [this.modalProjetosParticipante]);
+            data = await this.appService.editProjeto(this.modalProjetosId, this.modalProjetosNome, this.modalProjetosDescricao, [this.modalProjetosParticipante]);
             
             if (data.hasOwnProperty('status')) {
                 message = data.error.message;
@@ -294,12 +295,11 @@ export class AppComponent {
      * Ação da modal de funcionarios
      */
     public async actionModalFuncionarios(role: 'add' | 'edit') {
-        const jwt = this.userData.auth === undefined ? '' : this.userData.auth.toString();
         let message: string;
         let data: any;
 
         if (role === 'add') {
-            data = await this.appService.addFuncionario(jwt, this.modalFuncionariosNome, this.modalFuncionariosUser, this.modalFuncionariosEmail, this.modalFuncionariosSenha);
+            data = await this.appService.addFuncionario(this.modalFuncionariosNome, this.modalFuncionariosUser, this.modalFuncionariosEmail, this.modalFuncionariosSenha);
             
             if (data.hasOwnProperty('status')) {
                 message = data.error.message;
@@ -309,7 +309,7 @@ export class AppComponent {
             }
         }
         else {
-            data = await this.appService.editFuncionario(jwt, this.modalFuncionariosId, this.modalFuncionariosNome, this.modalFuncionariosUser, this.modalFuncionariosEmail, this.modalFuncionariosSenha);
+            data = await this.appService.editFuncionario(this.modalFuncionariosId, this.modalFuncionariosNome, this.modalFuncionariosUser, this.modalFuncionariosEmail, this.modalFuncionariosSenha);
             
             if (data.hasOwnProperty('status')) {
                 message = data.error.message;
@@ -329,11 +329,10 @@ export class AppComponent {
      * Botão de remoção do grid
      */
     public async gridControlRemoveClick(id: string) {
-        const jwt = this.userData.auth === undefined ? '' : this.userData.auth.toString();
         let message;
 
         if (this.componentInView === 'PROJETOS') {
-            const data: any = await this.appService.removeProjeto(jwt, id);
+            const data: any = await this.appService.removeProjeto(id);
 
             if (data.hasOwnProperty('status')) {
                 message = data.error.message;
@@ -345,7 +344,7 @@ export class AppComponent {
             this.projetosData = [];
         }
         else {
-            const data: any = await this.appService.removeFuncionario(jwt, id);
+            const data: any = await this.appService.removeFuncionario(id);
 
             if (data.hasOwnProperty('status')) {
                 message = data.error.message;

@@ -11,8 +11,13 @@ import { Projeto } from './models/projetos.model';
 
 export class AppService {
     private apiUrl: string = environment.apiUrl;
+    private authJWT: string = '';
 
     constructor(private httpClientModule: HttpClient) {
+    }
+
+    public setJWT(jwt: string) {
+        this.authJWT = jwt;
     }
 
     public login(email: string, senha: string): Promise<Login> {
@@ -40,7 +45,13 @@ export class AppService {
                  * Busca os dados no servidor
                  */
                 this.httpClientModule
-                    .get<Array<Usuario>>(`${this.apiUrl}/funcionarios/user`)
+                    .get<Array<Usuario>>(`${this.apiUrl}/funcionarios/user`,
+                    {
+                        headers: new HttpHeaders ({
+                            'Content-Type': 'application/json; charset=utf-8',
+                            'Authorization': 'Bearer ' + this.authJWT
+                        })
+                    })
                     .toPromise()
                     .then((funcionariosData: any) => resolve(funcionariosData))
                     .catch(e => resolve(e));
@@ -51,7 +62,7 @@ export class AppService {
         }
     }
 
-    public addFuncionario(jwt: string, nome: string, usuario: string, email: string, senha: string) {
+    public addFuncionario(nome: string, usuario: string, email: string, senha: string) {
         try {
             return new Promise<any>((resolve, reject) => {
                 /**
@@ -62,7 +73,7 @@ export class AppService {
                     {
                         headers: new HttpHeaders ({
                             'Content-Type': 'application/json; charset=utf-8',
-                            'Authorization': 'Bearer ' + jwt
+                            'Authorization': 'Bearer ' + this.authJWT
                         })
                     })
                     .toPromise()
@@ -75,7 +86,7 @@ export class AppService {
         }
     }
 
-    public editFuncionario(jwt: string, id: string, nome: string, usuario: string, email: string, senha: string) {
+    public editFuncionario(id: string, nome: string, usuario: string, email: string, senha: string) {
         try {
             return new Promise<any>((resolve, reject) => {
                 /**
@@ -86,7 +97,7 @@ export class AppService {
                     {
                         headers: new HttpHeaders ({
                             'Content-Type': 'application/json; charset=utf-8',
-                            'Authorization': 'Bearer ' + jwt
+                            'Authorization': 'Bearer ' + this.authJWT
                         })
                     })
                     .toPromise()
@@ -99,7 +110,7 @@ export class AppService {
         }
     }
 
-    public removeFuncionario(jwt: string, id: string) {
+    public removeFuncionario(id: string) {
         try {
             return new Promise<any>((resolve, reject) => {
                 /**
@@ -110,7 +121,7 @@ export class AppService {
                     {
                         headers: new HttpHeaders ({
                             'Content-Type': 'application/json; charset=utf-8',
-                            'Authorization': 'Bearer ' + jwt
+                            'Authorization': 'Bearer ' + this.authJWT
                         })
                     })
                     .toPromise()
@@ -130,7 +141,13 @@ export class AppService {
                  * Busca os dados no servidor
                  */
                 this.httpClientModule
-                    .get<Array<Projeto>>(`${this.apiUrl}/projetos/user`)
+                    .get<Array<Projeto>>(`${this.apiUrl}/projetos/user`,
+                    {
+                        headers: new HttpHeaders ({
+                            'Content-Type': 'application/json; charset=utf-8',
+                            'Authorization': 'Bearer ' + this.authJWT
+                        })
+                    })
                     .toPromise()
                     .then((projetosData: any) => resolve(projetosData))
                     .catch(e => resolve(e));
@@ -141,7 +158,7 @@ export class AppService {
         }
     }
 
-    public addProjeto(jwt: string, nome: string, descricao: string, participantes: Array<string>) {
+    public addProjeto(nome: string, descricao: string, participantes: Array<string>) {
         try {
             return new Promise<any>((resolve, reject) => {
                 /**
@@ -152,7 +169,7 @@ export class AppService {
                     {
                         headers: new HttpHeaders ({
                             'Content-Type': 'application/json; charset=utf-8',
-                            'Authorization': 'Bearer ' + jwt
+                            'Authorization': 'Bearer ' + this.authJWT
                         })
                     })
                     .toPromise()
@@ -165,7 +182,7 @@ export class AppService {
         }
     }
 
-    public editProjeto(jwt: string, id: string, nome: string, descricao: string, participantes: Array<string>) {
+    public editProjeto(id: string, nome: string, descricao: string, participantes: Array<string>) {
         try {
             return new Promise<any>((resolve, reject) => {
                 /**
@@ -176,7 +193,7 @@ export class AppService {
                     {
                         headers: new HttpHeaders ({
                             'Content-Type': 'application/json; charset=utf-8',
-                            'Authorization': 'Bearer ' + jwt
+                            'Authorization': 'Bearer ' + this.authJWT
                         })
                     })
                     .toPromise()
@@ -189,7 +206,7 @@ export class AppService {
         }
     }
 
-    public removeProjeto(jwt: string, id: string) {
+    public removeProjeto(id: string) {
         try {
             return new Promise<any>((resolve, reject) => {
                 /**
@@ -200,7 +217,7 @@ export class AppService {
                     {
                         headers: new HttpHeaders ({
                             'Content-Type': 'application/json; charset=utf-8',
-                            'Authorization': 'Bearer ' + jwt
+                            'Authorization': 'Bearer ' + this.authJWT
                         })
                     })
                     .toPromise()
