@@ -48,6 +48,19 @@ class funcionariosClass(Resource):
 			if "cargo" not in usuarioLogado:
 				return usuarioLogado
 
+			# Usuários com cargo diferente de 9 não podem visualizar outros funcionários
+			if usuarioLogado["cargo"] != 9:
+				# Se o id recebido for igual o id do usuário logado, retorna os dados dele
+				if usuarioLogado["id"] == id:
+					usuarios = self.db.usuarios.find({"_id": usuarioLogado["id"]}, {'senha': 0, 'salt': 0})
+
+					for usuario in usuarios:
+						return usuario, 200
+
+				# Caso contrário, mensagem de erro
+				return {'message': 'Você não possui permissão para visualizar dados de outros funcionários.'}, 401
+
+			# Retorna a listagem dos funcionários
 			return loads(dumps(list(self.db.usuarios.find({}, {'senha': 0, 'salt': 0}))))
 		
 		except Exception as ex:

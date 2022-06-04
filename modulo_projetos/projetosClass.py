@@ -47,6 +47,10 @@ class projetosClass(Resource):
 			if "cargo" not in usuarioLogado:
 				return usuarioLogado
 
+			# Verifica se o usuário possui permissão para visualizar os projetos
+			if usuarioLogado["cargo"] != 9:
+				return {'message': 'Você não possui permissão para visualizar os projetos em andamento.'}, 401
+
 			return loads(dumps(list(self.db.projetos.find())))
 		
 		except Exception as ex:
