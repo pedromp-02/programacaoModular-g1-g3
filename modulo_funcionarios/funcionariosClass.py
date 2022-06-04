@@ -24,6 +24,10 @@ class funcionariosClass(Resource):
 		try:
 			usuarioLogado = userModel.isUserLogado(request)
 
+			# Verifica se o usuário está logado
+			if "cargo" not in usuarioLogado:
+				return usuarioLogado
+
 			if usuarioLogado["cargo"] != 9 and usuarioLogado["id"] != id:
 				return {'message': 'Você não possui permissão para remover um outro funcionário.'}, 401
 
@@ -38,6 +42,12 @@ class funcionariosClass(Resource):
 
 	def get(self, id):
 		try:
+			usuarioLogado = userModel.isUserLogado(request)
+
+			# Verifica se o usuário está logado
+			if "cargo" not in usuarioLogado:
+				return usuarioLogado
+
 			return loads(dumps(list(self.db.usuarios.find({}, {'senha': 0, 'salt': 0}))))
 		
 		except Exception as ex:
@@ -46,6 +56,10 @@ class funcionariosClass(Resource):
 	def put(self, id):
 		try:
 			usuarioLogado = userModel.isUserLogado(request)
+
+			# Verifica se o usuário está logado
+			if "cargo" not in usuarioLogado:
+				return usuarioLogado
 
 			if usuarioLogado["cargo"] != 9:
 				return {'message': 'Você não possui permissão para incluir um funcionário.'}, 401
@@ -92,6 +106,10 @@ class funcionariosClass(Resource):
 	def post(self, id):
 		try:
 			usuarioLogado = userModel.isUserLogado(request)
+
+			# Verifica se o usuário está logado
+			if "cargo" not in usuarioLogado:
+				return usuarioLogado
 
 			if usuarioLogado["cargo"] != 9 and usuarioLogado["id"] != id:
 				return {'message': 'Você não possui permissão para alterar outro funcionário.'}, 401

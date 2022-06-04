@@ -5,6 +5,7 @@ import modulo_cripto
 import datetime
 import jwt
 
+# Classe que gera o token de autenticação e valida o mesmo
 class userModel():
 	@staticmethod
 	def encode_auth_token(cargo, id):
