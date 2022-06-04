@@ -1,8 +1,9 @@
+import { Usuario } from "./usuario.model";
+
 export class Login {
     constructor (
-        public message?: string,
-        public nome?: string,
-        public cargo?: number,
-        public auth?: string
+        public message: string,
+        public auth: string,
+        public user: Usuario
     ) { }
 }

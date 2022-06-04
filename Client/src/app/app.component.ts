@@ -20,7 +20,7 @@ export class AppComponent {
      */
     public userIsLogged: boolean = false;
     public userLoginData: string = '';
-    public userData: Login;
+    public userData: Usuario;
 
     /**
      * Controla a exibicao da modal de login
@@ -74,7 +74,6 @@ export class AppComponent {
         private appService: AppService,
         private snackBar: MatSnackBar) {
 
-        this.userData = new Login();
     }
 
     /**
@@ -94,14 +93,14 @@ export class AppComponent {
             const data = new Date();
             const jwt = loginData.auth === undefined ? '' : loginData.auth.toString();
 
-            this.userData = loginData;
+            this.userData = loginData.user;
             this.appService.setJWT(jwt);
             this.userLoginData = `${data.getHours()}:${data.getMinutes()}`
 
             this.userIsLogged = true;
             this.showLogin = false;
 
-            this.snackBar.open(`Bem vindo(a) ao sistema, ${loginData.nome}`, 'Fechar');
+            this.snackBar.open(`Bem vindo(a) ao sistema, ${loginData.user.nome}`, 'Fechar');
             this.getDataToView();
         }
         else {
