@@ -1,34 +1,23 @@
 import modulo_cripto
 import random
 import string
-from os import urandom
 
-def generate_salt():
-    return urandom(16).hex()
 
   
-password = ''.join(random.choice(string.ascii_letters + string.digits + string.punctuation) for i in range(10)) #senha digitada pelo usuario no cadastro (pode pegar direto em um teste do banco se quisef)
+password = ''.join(random.choice(string.ascii_letters + string.digits + string.punctuation) for i in range(10)) #senha digitada pelo usuario no cadastro
 truepassword = password #senha digitada pelo usuario no login corretamente
-falsepassword = password + 'a' #senha digitada pelo usuario no login de forma errada 
-type = 'sha256' #tipo que o grupo 3 vai usar (eu acho)
-iterations = 100 #tipo que o grupo 3 vai usar (eu acho)
-dklen = 64 #tipo que o grupo 3 vai usar (eu acho)
-salt1 = generate_salt() # grupo 1 cria salt com 32 caracteres (se quiser pode deixar ja no banco de dados um de teste e usar ele)
-salt2 = generate_salt() #grupo 1 cria salt com 32 caracteres
-
-
-def testasalt():
-  assert salt1 != salt2
-
-
-
+falsepassword = password + 'a' #senha digitada pelo usuario no login de forma errada
+type = 'sha256' 
+iterations = 100 
+dklen = 64
+salt1 =  b70c4693d1d8d802971c154e731eb544 # grupo 1 cria salt com 32 caracteres
+salt2 =  9a1ff6597127ae6e485cc1ff6a118fc7 #grupo 1 cria salt com 32 caracteres
 
 
 
 def testasenhacorreta():
   assert modulo_cripto.generate_hashed_password(type, password,salt1,iterations,dklen) == modulo_cripto.generate_hashed_password(type, truepassword,salt1,iterations,dklen)
-  
-
+ 
 
 
 def testasenhaerrada():
