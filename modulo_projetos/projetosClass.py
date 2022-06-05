@@ -1,3 +1,4 @@
+from ast import dump
 from flask import request
 from flask_restful import Resource
 from modulo_db.dbClass import dbClass
@@ -47,11 +48,17 @@ class projetosClass(Resource):
 			if "possuiPermissaoRH" not in usuarioLogado:
 				return usuarioLogado
 
-			# Verifica se o usuário possui permissão para visualizar os projetos
-			if usuarioLogado["possuiPermissaoRH"] != True:
-				return {'message': 'Você não possui permissão para visualizar os projetos em andamento.'}, 401
+			# Se for para listar todos os projetos em andamento
+			if id == 'list':
+				# Verifica se o usuário possui permissão para visualizar os projetos
+				if usuarioLogado["possuiPermissaoRH"] != True:
+					return {'message': 'Você não possui permissão para visualizar os projetos em andamento.'}, 401
 
-			return loads(dumps(list(self.db.projetos.find())))
+				return loads(dumps(list(self.db.projetos.find())))
+			
+			# Lista somente os projetos do usuário logado
+			else:
+				return loads(dumps(list(self.db.projetos.find({"participantes": {"$elemMatch": {"matricula": usuarioLogado["_id"]}}}))))
 		
 		except Exception as ex:
 			return {'message': 'Ocorreu um erro interno. Tente novamente mais tarde.'}, 500
