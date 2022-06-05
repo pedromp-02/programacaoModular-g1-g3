@@ -1,7 +1,5 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
-import { MatPaginator } from '@angular/material/paginator';
+import { Component, Input, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { AppService } from '../app.service';
 import { Usuario } from '../models/usuario.model';
@@ -18,9 +16,6 @@ export class FuncionariosComponent implements OnInit {
     /**
      * Grids
      */
-    @ViewChild(MatSort, { static: true }) gridSort!: MatSort;
-    @ViewChild(MatPaginator, { static: true }) gridPaginator!: MatPaginator;
- 
     private data: Array<Usuario> = [];
     public componentIsLoading: boolean = true;
 
@@ -45,8 +40,6 @@ export class FuncionariosComponent implements OnInit {
         private snackBar: MatSnackBar) { }
 
     ngOnInit() {
-        this.gridData.sort = this.gridSort;
-        this.gridData.paginator = this.gridPaginator;
         this.getData();
     }
 
@@ -55,7 +48,7 @@ export class FuncionariosComponent implements OnInit {
      */
     public async getData() {
         this.componentIsLoading = true;
-        
+
         if (this.data.length === 0) {
             this.data = await this.appService.getFuncionarios();
         }
@@ -74,7 +67,7 @@ export class FuncionariosComponent implements OnInit {
         if (this.userData.possuiPermissaoRH) {
             this.gridColumns.push({ name: 'controls', display: 'Ações' });
         }
-        
+
         this.gridColumnsToDisplay = this.gridColumns.map(col => col.name);
     }
 
@@ -95,15 +88,15 @@ export class FuncionariosComponent implements OnInit {
                 title: 'Editar dados do funcionário',
                 role: 'edit'
             };
-    
+
             const funcionario = this.data.filter(e => e._id === id)[0];
-    
+
             this.modalId = id;
             this.modalNome = funcionario.nome;
             this.modalUser = funcionario.usuario;
             this.modalEmail = funcionario.email;
             this.modalSenha = '';
-    
+
             this.showModal = true;
         }
     }
@@ -150,7 +143,7 @@ export class FuncionariosComponent implements OnInit {
 
         if (role === 'add') {
             data = await this.appService.addFuncionario(this.modalNome, this.modalUser, this.modalEmail, this.modalSenha);
-            
+
             if (data.hasOwnProperty('status')) {
                 message = data.error.message;
             }
@@ -160,7 +153,7 @@ export class FuncionariosComponent implements OnInit {
         }
         else {
             data = await this.appService.editFuncionario(this.modalId, this.modalNome, this.modalUser, this.modalEmail, this.modalSenha);
-            
+
             if (data.hasOwnProperty('status')) {
                 message = data.error.message;
             }

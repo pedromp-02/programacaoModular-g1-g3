@@ -1,7 +1,5 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
-import { MatPaginator } from '@angular/material/paginator';
+import { Component, Input, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { AppService } from '../app.service';
 import { Projeto } from '../models/projetos.model';
@@ -19,9 +17,6 @@ export class ProjetosComponent implements OnInit {
     /**
      * Grids
      */
-    @ViewChild(MatSort, { static: true }) gridSort!: MatSort;
-    @ViewChild(MatPaginator, { static: true }) gridPaginator!: MatPaginator;
- 
     private data: Array<Projeto> = [];
     public componentIsLoading: boolean = true;
 
@@ -44,8 +39,6 @@ export class ProjetosComponent implements OnInit {
         private snackBar: MatSnackBar) { }
 
     ngOnInit() {
-        this.gridData.sort = this.gridSort;
-        this.gridData.paginator = this.gridPaginator;
         this.getData();
     }
 
@@ -54,7 +47,7 @@ export class ProjetosComponent implements OnInit {
      */
     public async getData() {
         this.componentIsLoading = true;
-        
+
         if (this.data.length === 0) {
             this.data = await this.appService.getProjetos();
         }
@@ -72,7 +65,7 @@ export class ProjetosComponent implements OnInit {
         if (this.userData.possuiPermissaoRH) {
             this.gridColumns.push({ name: 'controls', display: 'Ações' });
         }
-        
+
         this.gridColumnsToDisplay = this.gridColumns.map(col => col.name);
     }
 
@@ -93,7 +86,7 @@ export class ProjetosComponent implements OnInit {
                 title: 'Editar o projeto',
                 role: 'edit'
             };
-    
+
             const projeto = this.data.filter(e => e._id === id)[0];
 
             this.modalId = id;
