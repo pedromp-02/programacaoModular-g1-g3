@@ -82,7 +82,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 }
 
 .content {
-    margin-top: 50px;
+    margin-top: 20px;
     padding-bottom: 80px;
 
     .title {
@@ -99,7 +99,8 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
         margin-top: 30px;
         background-color: #fff;
         border-radius: 10px;
-        box-shadow: 0 3px 5px -1px #0003, 0 6px 10px #00000024, 0 1px 18px #0000001f;
+        box-shadow: 0 3px 5px -1px #00000005, 0 6px 10px #0000000f, 0 1px 18px #0000000a;
+        border: 1px solid #eee;
         overflow: hidden;
 
         table {

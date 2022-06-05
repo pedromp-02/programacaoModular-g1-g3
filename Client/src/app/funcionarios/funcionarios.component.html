@@ -1,4 +1,14 @@
-<div class="content">
+<div class="content" *ngIf="!userData.possuiPermissaoRH">
+    <div class="container">
+        <div class="title">
+            <h1>Projetos</h1>
+        </div>
+        
+        <p>Você não possui permissão para visualizar os funcionários.</p>
+    </div>
+</div>
+
+<div class="content" *ngIf="userData.possuiPermissaoRH">
     <div class="container">
         <div class="title">
             <h1>Funcionários</h1>       
@@ -18,7 +28,7 @@
                                 <mat-icon>edit</mat-icon>
                             </button>
 
-                            <button mat-icon-button (click)="gridControlRemoveClick(element._id)">
+                            <button mat-icon-button (click)="gridControlRemoveClick(element._id)" *ngIf="element._id !== userData._id">
                                 <mat-icon>remove_circle</mat-icon>
                             </button>
                         </div>

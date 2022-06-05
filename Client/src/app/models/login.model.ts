@@ -4,7 +4,7 @@ export class Login {
     constructor (
         public message: string,
         public auth: string,
-        public user: Usuario
+        public user?: Usuario
     ) { }
 
     public isSuccessLogin() {

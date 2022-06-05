@@ -1,4 +1,14 @@
-<div class="content">
+<div class="content" *ngIf="!userData.possuiPermissaoRH">
+    <div class="container">
+        <div class="title">
+            <h1>Projetos</h1>
+        </div>
+
+        <p>Você não possui permissão para visualizar os projetos.</p>
+    </div>
+</div>
+
+<div class="content" *ngIf="userData.possuiPermissaoRH">
     <div class="container">
         <div class="title">
             <h1>Projetos</h1>       

@@ -49,7 +49,7 @@ export class AppComponent {
         const loginData = await this.appService.login(this.formLoginEmail, this.formLoginSenha);
 
         if (loginData.isSuccessLogin()) {
-            this.userData = loginData.user;
+            this.userData = loginData.user === undefined ? new Usuario() : loginData.user;
             this.appService.setJWT(loginData.auth);
 
             const data = new Date();
@@ -79,6 +79,5 @@ export class AppComponent {
 
         this.userIsLogged = false;
         this.userLoginData = '';
-        this.userData = new Usuario('', '', '', '', '', false)
     }
 }

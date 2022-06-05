@@ -31,7 +31,7 @@ export class AppService {
                     .toPromise()
                     .then((loginData?: Login) => {
                         if (loginData === undefined) {
-                            resolve(new Login('', '', new Usuario('', '', '', '', '', false)))
+                            resolve(new Login('', '', undefined))
                         }
                         else {
                             resolve(new Login(loginData.message, loginData.auth,  loginData.user));

@@ -6,18 +6,18 @@
         </div>
 
         <div class="menu">
-            <button mat-raised-button color="accent" (click)="toggleLogin()" *ngIf="!userIsLogged">Entrar</button>
-            <button mat-raised-button color="accent" (click)="sair()" *ngIf="userIsLogged">Sair</button>
+            <button mat-raised-button color="accent" (click)="toggleLogin()" *ngIf="!userIsLogged">Entrar <mat-icon>login</mat-icon></button>
+            <button mat-raised-button color="accent" (click)="sair()" *ngIf="userIsLogged">Sair <mat-icon>exit_to_app</mat-icon></button>
         </div>
     </div>
 </div>
 
 <mat-tab-group mat-align-tabs="center" *ngIf="userIsLogged">
     <mat-tab label="Dados pessoais">
-        <app-dados-pessoais></app-dados-pessoais>
+        <app-dados-pessoais [userData]="userData"></app-dados-pessoais>
     </mat-tab>
 
-    <mat-tab label="Funcionários">
+    <mat-tab label="Funcionários" *ngIf="userData.possuiPermissaoRH">
         <app-funcionarios [userData]="userData"></app-funcionarios>
     </mat-tab>
 
