@@ -17,6 +17,10 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AppService } from './app.service';
 import { MatPaginatorIntl } from '@angular/material/paginator';
+import { MatTabsModule } from '@angular/material/tabs';
+import { DadosPessoaisComponent } from './dados-pessoais/dados-pessoais.component';
+import { FuncionariosComponent } from './funcionarios/funcionarios.component';
+import { ProjetosComponent } from './projetos/projetos.component';
 
 /**
  * Função responsável por traduzir a paginação dos grids.
@@ -62,10 +66,14 @@ export function getPtPaginatorIntl() {
         MatPaginatorModule,
         MatSortModule,
         MatProgressSpinnerModule,
+        MatTabsModule,
         AppRoutingModule
     ],
     declarations: [
-        AppComponent
+        AppComponent,
+        DadosPessoaisComponent,
+        FuncionariosComponent,
+        ProjetosComponent
     ],
     providers: [
         AppService,

@@ -6,4 +6,8 @@ export class Login {
         public auth: string,
         public user: Usuario
     ) { }
+
+    public isSuccessLogin() {
+        return this.message === undefined && this.auth !== undefined && typeof this.auth === 'string' && typeof this.user === 'object';
+    }
 }

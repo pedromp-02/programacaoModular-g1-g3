@@ -107,7 +107,6 @@ class loginClass(Resource):
 
 				# Cria a resposta
 				response = {
-					'message': 'OK.',
 					'auth': auth_token,
 					'user': usuario
 				}

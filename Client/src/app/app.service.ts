@@ -29,7 +29,14 @@ export class AppService {
                 this.httpClientModule
                     .post<Login>(`${this.apiUrl}/login`, { email, senha })
                     .toPromise()
-                    .then((loginData: any) => resolve(loginData))
+                    .then((loginData?: Login) => {
+                        if (loginData === undefined) {
+                            resolve(new Login('', '', new Usuario('', '', '', '', '', false)))
+                        }
+                        else {
+                            resolve(new Login(loginData.message, loginData.auth,  loginData.user));
+                        }
+                    })
                     .catch(e => resolve(e));
             });
         }
