@@ -132,7 +132,7 @@ export class AppComponent {
                 { name: 'cargo', display: 'Cargo' }
             ];
 
-            if (this.userData.cargo === 9) {
+            if (this.userData.possuiPermissaoRH) {
                 this.gridColumns.push({ name: 'controls', display: 'Ações' });
             }
 
@@ -151,7 +151,7 @@ export class AppComponent {
                 { name: 'participantes', display: 'Participantes' },
             ];
 
-            if (this.userData.cargo === 9) {
+            if (this.userData.possuiPermissaoRH) {
                 this.gridColumns.push({ name: 'controls', display: 'Ações' });
             }
 

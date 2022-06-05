@@ -4,7 +4,8 @@ export class Usuario {
         public nome: string,
         public email: string,
         public usuario: string,
-        public cargo: number) {
+        public cargo: string,
+        public possuiPermissaoRH: boolean) {
             
         }
 }

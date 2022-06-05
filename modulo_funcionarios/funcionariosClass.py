@@ -25,10 +25,10 @@ class funcionariosClass(Resource):
 			usuarioLogado = userModel.isUserLogado(request)
 
 			# Verifica se o usuário está logado
-			if "cargo" not in usuarioLogado:
+			if "possuiPermissaoRH" not in usuarioLogado:
 				return usuarioLogado
 
-			if usuarioLogado["cargo"] != 9 and usuarioLogado["id"] != id:
+			if usuarioLogado["possuiPermissaoRH"] != True and usuarioLogado["_id"] != id:
 				return {'message': 'Você não possui permissão para remover um outro funcionário.'}, 401
 
 			if not self.busca_funcionario(id):
@@ -45,14 +45,14 @@ class funcionariosClass(Resource):
 			usuarioLogado = userModel.isUserLogado(request)
 
 			# Verifica se o usuário está logado
-			if "cargo" not in usuarioLogado:
+			if "possuiPermissaoRH" not in usuarioLogado:
 				return usuarioLogado
 
-			# Usuários com cargo diferente de 9 não podem visualizar outros funcionários
-			if usuarioLogado["cargo"] != 9:
+			# Usuários sem permissao do RH não podem visualizar outros funcionários
+			if usuarioLogado["possuiPermissaoRH"] != True:
 				# Se o id recebido for igual o id do usuário logado, retorna os dados dele
-				if usuarioLogado["id"] == id:
-					usuarios = self.db.usuarios.find({"_id": usuarioLogado["id"]}, {'senha': 0, 'salt': 0})
+				if usuarioLogado["_id"] == id:
+					usuarios = self.db.usuarios.find({"_id": usuarioLogado["_id"]}, {'senha': 0, 'salt': 0})
 
 					for usuario in usuarios:
 						return usuario, 200
@@ -71,10 +71,10 @@ class funcionariosClass(Resource):
 			usuarioLogado = userModel.isUserLogado(request)
 
 			# Verifica se o usuário está logado
-			if "cargo" not in usuarioLogado:
+			if "possuiPermissaoRH" not in usuarioLogado:
 				return usuarioLogado
 
-			if usuarioLogado["cargo"] != 9:
+			if usuarioLogado["possuiPermissaoRH"] != True:
 				return {'message': 'Você não possui permissão para incluir um funcionário.'}, 401
 
 			if 'nome' not in request.json:
@@ -121,10 +121,10 @@ class funcionariosClass(Resource):
 			usuarioLogado = userModel.isUserLogado(request)
 
 			# Verifica se o usuário está logado
-			if "cargo" not in usuarioLogado:
+			if "possuiPermissaoRH" not in usuarioLogado:
 				return usuarioLogado
 
-			if usuarioLogado["cargo"] != 9 and usuarioLogado["id"] != id:
+			if usuarioLogado["possuiPermissaoRH"] != True and usuarioLogado["_id"] != id:
 				return {'message': 'Você não possui permissão para alterar outro funcionário.'}, 401
 
 			if not self.busca_funcionario(id):

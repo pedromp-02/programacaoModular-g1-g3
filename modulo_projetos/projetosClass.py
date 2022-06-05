@@ -24,10 +24,10 @@ class projetosClass(Resource):
 			usuarioLogado = userModel.isUserLogado(request)
 
 			# Verifica se o usuário está logado
-			if "cargo" not in usuarioLogado:
+			if "possuiPermissaoRH" not in usuarioLogado:
 				return usuarioLogado
 
-			if usuarioLogado["cargo"] != 9:
+			if usuarioLogado["possuiPermissaoRH"] != True:
 				return {'message': 'Você não possui permissão para remover um projeto.'}, 401
 
 			if not self.busca_projeto(id):
@@ -44,11 +44,11 @@ class projetosClass(Resource):
 			usuarioLogado = userModel.isUserLogado(request)
 
 			# Verifica se o usuário está logado
-			if "cargo" not in usuarioLogado:
+			if "possuiPermissaoRH" not in usuarioLogado:
 				return usuarioLogado
 
 			# Verifica se o usuário possui permissão para visualizar os projetos
-			if usuarioLogado["cargo"] != 9:
+			if usuarioLogado["possuiPermissaoRH"] != True:
 				return {'message': 'Você não possui permissão para visualizar os projetos em andamento.'}, 401
 
 			return loads(dumps(list(self.db.projetos.find())))
@@ -61,10 +61,10 @@ class projetosClass(Resource):
 			usuarioLogado = userModel.isUserLogado(request)
 			
 			# Verifica se o usuário está logado
-			if "cargo" not in usuarioLogado:
+			if "possuiPermissaoRH" not in usuarioLogado:
 				return usuarioLogado
 
-			if usuarioLogado["cargo"] != 9:
+			if usuarioLogado["possuiPermissaoRH"] != True:
 				return {'message': 'Você não possui permissão para incluir um projeto.'}, 401
 
 			if 'nome' not in request.json:
@@ -98,10 +98,10 @@ class projetosClass(Resource):
 			usuarioLogado = userModel.isUserLogado(request)
 
 			# Verifica se o usuário está logado
-			if "cargo" not in usuarioLogado:
+			if "possuiPermissaoRH" not in usuarioLogado:
 				return usuarioLogado
 
-			if usuarioLogado["cargo"] != 9:
+			if usuarioLogado["possuiPermissaoRH"] != True:
 				return {'message': 'Você não possui permissão para atualizar um projeto.'}, 401
 
 			if not self.busca_projeto(id):
