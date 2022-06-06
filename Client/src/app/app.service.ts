@@ -148,7 +148,31 @@ export class AppService {
                  * Busca os dados no servidor
                  */
                 this.httpClientModule
-                    .get<Array<Projeto>>(`${this.apiUrl}/projetos/user`,
+                    .get<Array<Projeto>>(`${this.apiUrl}/projetos/list`,
+                    {
+                        headers: new HttpHeaders ({
+                            'Content-Type': 'application/json; charset=utf-8',
+                            'Authorization': 'Bearer ' + this.authJWT
+                        })
+                    })
+                    .toPromise()
+                    .then((projetosData: any) => resolve(projetosData))
+                    .catch(e => resolve(e));
+            });
+        }
+        catch (e) {
+            return Promise.reject(e);
+        }
+    }
+
+    public getProjetosUserLogado(): Promise<Array<Projeto>> {
+        try {
+            return new Promise<Array<Projeto>>((resolve, reject) => {
+                /**
+                 * Busca os dados no servidor
+                 */
+                this.httpClientModule
+                    .get<Array<Projeto>>(`${this.apiUrl}/projetos/mine`,
                     {
                         headers: new HttpHeaders ({
                             'Content-Type': 'application/json; charset=utf-8',

@@ -1,6 +1,7 @@
 from ast import dump
 from flask import request
 from flask_restful import Resource
+from sqlalchemy import func
 from modulo_db.dbClass import dbClass
 from modulo_login.loginClass import userModel
 from bson.json_util import dumps, loads
@@ -54,13 +55,14 @@ class projetosClass(Resource):
 				if usuarioLogado["possuiPermissaoRH"] != True:
 					return {'message': 'Você não possui permissão para visualizar os projetos em andamento.'}, 401
 
-				return loads(dumps(list(self.db.projetos.find())))
+				return self.getFuncionariosProjeto(self.db.projetos.find())
 			
 			# Lista somente os projetos do usuário logado
 			else:
-				return loads(dumps(list(self.db.projetos.find({"participantes": {"$elemMatch": {"matricula": usuarioLogado["_id"]}}}))))
+				return self.getFuncionariosProjeto(self.db.projetos.find({"participantes": {"$elemMatch": {"matricula": usuarioLogado["_id"]}}}))
 		
 		except Exception as ex:
+			print(ex)
 			return {'message': 'Ocorreu um erro interno. Tente novamente mais tarde.'}, 500
 
 	def put(self, id):
@@ -142,3 +144,27 @@ class projetosClass(Resource):
 				return projeto
 
 		return False
+
+	# Função responsável por obter os dados de cada funcionário que participam do projeto
+	def getFuncionariosProjeto(self, projetos):
+		projetosComFuncionarios = []
+
+		for projeto in projetos:
+			for funcionario in projeto["participantes"]:
+				funcionarioData = self.getFuncionarioData(funcionario["matricula"])
+
+				if funcionarioData != None:
+					funcionario["nome"] = funcionarioData["nome"]
+					funcionario["email"] = funcionarioData["email"]
+
+			projetosComFuncionarios.append(projeto)
+
+		return projetosComFuncionarios
+	
+	# Função responsável por obter os dados de um funcionário
+	def getFuncionarioData(self, matricula):
+		for funcionario in self.db.usuarios.find({"_id": matricula}):
+			if (funcionario['_id'] == matricula):
+				return funcionario
+
+		return None

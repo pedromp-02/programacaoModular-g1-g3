@@ -17,8 +17,13 @@ export class ProjetosComponent implements OnInit {
     /**
      * Grids
      */
-    private data: Array<Projeto> = [];
+    public seusProjetosData: Array<Projeto> = [];
+    public data: Array<Projeto> = [];
     public componentIsLoading: boolean = true;
+
+    public gridProjetosUserData: MatTableDataSource<any> = new MatTableDataSource();
+    public gridProjetosUserColumns: Array<any> = [];
+    public gridProjetosUserColumnsToDisplay: Array<string> = [];
 
     public gridData: MatTableDataSource<any> = new MatTableDataSource();
     public gridColumns: Array<any> = [];
@@ -39,13 +44,38 @@ export class ProjetosComponent implements OnInit {
         private snackBar: MatSnackBar) { }
 
     ngOnInit() {
+        this.getUserData();
         this.getData();
     }
 
     /**
      * Função responsável por obter os dados
      */
-    public async getData() {
+    private async getUserData() {
+        if (this.seusProjetosData.length === 0) {
+            this.seusProjetosData = await this.appService.getProjetosUserLogado();
+        }
+
+        for (const projeto of this.seusProjetosData) {
+            projeto.suaCargaHoraria = `${projeto.participantes.filter(e => e.matricula === this.userData._id)[0].cargaHorariaSemanal} horas`;
+        }
+
+        this.gridProjetosUserData.data = this.seusProjetosData;
+        this.gridProjetosUserColumns = [
+            { name: '_id', display: 'Identificador' },
+            { name: 'nome', display: 'Nome' },
+            { name: 'dataInicio', display: 'Data de início' },
+            { name: 'dataFim', display: 'Previsão de término' },
+            { name: 'suaCargaHoraria', display: 'Sua carga horária semanal' }
+        ];
+
+        this.gridProjetosUserColumnsToDisplay = this.gridProjetosUserColumns.map(col => col.name);
+    }
+
+    /**
+     * Função responsável por obter os dados
+     */
+    private async getData() {
         this.componentIsLoading = true;
 
         if (this.data.length === 0) {
@@ -56,9 +86,10 @@ export class ProjetosComponent implements OnInit {
 
         this.gridData.data = this.data;
         this.gridColumns = [
-            { name: '_id', display: 'Identificador' },
             { name: 'nome', display: 'Nome' },
             { name: 'descricao', display: 'Descrição' },
+            { name: 'dataInicio', display: 'Data de início' },
+            { name: 'dataFim', display: 'Previsão de término' },
             { name: 'participantes', display: 'Participantes' },
         ];
 
@@ -92,7 +123,7 @@ export class ProjetosComponent implements OnInit {
             this.modalId = id;
             this.modalNome = projeto.nome;
             this.modalDescricao = projeto.descricao;
-            this.modalParticipante = projeto.participantes[0];
+            this.modalParticipante = projeto.participantes[0].email;
 
             this.showModal = true;
         }
