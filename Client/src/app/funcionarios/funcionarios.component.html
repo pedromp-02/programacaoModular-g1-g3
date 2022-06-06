@@ -11,8 +11,12 @@
 <div class="content" *ngIf="userData.possuiPermissaoRH">
     <div class="container">
         <div class="title">
-            <h1>Funcionários</h1>       
-            <button mat-raised-button *ngIf="userData.possuiPermissaoRH" (click)="openModal()">Adicionar</button>
+            <h1>Funcionários</h1>
+
+            <div *ngIf="userData.possuiPermissaoRH">
+                <input (keyup)="applyFilter($event)" placeholder="Filtrar dados">
+                <button mat-raised-button (click)="openModal()">Adicionar</button>
+            </div>
         </div>
 
         <div class="table" *ngIf="!componentIsLoading">

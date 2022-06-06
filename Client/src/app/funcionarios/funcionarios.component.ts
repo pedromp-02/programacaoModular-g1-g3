@@ -72,6 +72,14 @@ export class FuncionariosComponent implements OnInit {
     }
 
     /**
+     * Função responsável por filtrar o grid
+     */
+    public applyFilter(event: Event) {
+        const filterValue = (event.target as HTMLInputElement).value;
+        this.gridData.filter = filterValue.trim().toLowerCase();
+    }
+
+    /**
      * Função responsável por abrir a modal
      */
     public openModal(id: string = '') {
