@@ -1,6 +1,6 @@
 #https://1drv.ms/b/s!ArA-DhLm6QVXiK5UE-eEcEZxLB0-2w
 import hashlib
-
+#fazendo um comentário para retestar
 def hash(hasher, password, salt):
   to_be_hashed = (salt + password).encode()
   hasher.update(to_be_hashed)
