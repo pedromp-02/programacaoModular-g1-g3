@@ -45,6 +45,17 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
         h1 {
             font-size: 30px;
             margin-bottom: 20px;
+
+            &.margin-top {
+                margin-top: 20px;
+            }
+
+            a {
+                text-decoration: none;
+                color: #3f51b5;
+                font-size: 14px;
+                margin-left: 20px;
+            }
         }
 
         .form {
@@ -63,6 +74,16 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
                 }
             }
 
+            .super-line {
+                width: 100%;
+                flex-basis: 100%;
+                display: flex;
+                flex-wrap: wrap;
+                padding-bottom: 20px;
+                margin-bottom: 20px;
+                border-bottom: 1px solid rgba(0,0,0,.12);
+            }
+
             .mat-raised-button {
                 padding: 4px 19px;
                 font-size: 16px;
@@ -76,8 +97,22 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
     }
 
     &.s3 .modal-container {
-        height: 450px;
+        height: 430px;
         top: calc(50% - 225px);
+        padding-bottom: 20px;
+        overflow-y: auto;
+
+        .form {
+            height: auto;
+
+            .line {
+                margin-bottom: 25px;
+
+                &:last-child {
+                    margin-bottom: 0;
+                }
+            }
+        }
     }
 
     &.s4 .modal-container {

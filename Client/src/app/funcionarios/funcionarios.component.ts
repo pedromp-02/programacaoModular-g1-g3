@@ -28,12 +28,8 @@ export class FuncionariosComponent implements OnInit {
      */
     public showModal: boolean = false;
     public modal: any = {};
-    public modalId: string = '';
-    public modalNome: string = '';
-    public modalUser: string = '';
-    public modalEmail: string = '';
-    public modalSenha: string = '';
-    public modalHidePassword: boolean = true;
+    public modalDadosUsuario!: Usuario;
+    public modalHidePassword = true;
 
     /**
      * Modal detalhes
@@ -104,12 +100,7 @@ export class FuncionariosComponent implements OnInit {
             };
 
             const funcionario = this.data.filter(e => e._id === id)[0];
-
-            this.modalId = id;
-            this.modalNome = funcionario.nome;
-            this.modalUser = funcionario.usuario;
-            this.modalEmail = funcionario.email;
-            this.modalSenha = '';
+            this.modalDadosUsuario = Object.assign({}, funcionario);
 
             this.showModal = true;
         }
@@ -119,11 +110,7 @@ export class FuncionariosComponent implements OnInit {
      * Função responsável por ocultar a modal
      */
     public hideModal() {
-        this.modalId = '';
-        this.modalNome = '';
-        this.modalUser = '';
-        this.modalEmail = '';
-        this.modalSenha = '';
+        this.modalDadosUsuario = new Usuario();
         this.modalHidePassword = true;
 
         this.showModal = false;
@@ -163,7 +150,7 @@ export class FuncionariosComponent implements OnInit {
         let data: any;
 
         if (role === 'add') {
-            data = await this.appService.addFuncionario(this.modalNome, this.modalUser, this.modalEmail, this.modalSenha);
+            data = await this.appService.addFuncionario(this.modalDadosUsuario);
 
             if (data.hasOwnProperty('status')) {
                 message = data.error.message;
@@ -173,7 +160,7 @@ export class FuncionariosComponent implements OnInit {
             }
         }
         else {
-            data = await this.appService.editFuncionario(this.modalId, this.modalNome, this.modalUser, this.modalEmail, this.modalSenha);
+            data = await this.appService.editFuncionario(this.modalDadosUsuario);
 
             if (data.hasOwnProperty('status')) {
                 message = data.error.message;
@@ -192,5 +179,13 @@ export class FuncionariosComponent implements OnInit {
     public showDetailsFuncionario(funcionario: Usuario) {
         this.modalDetalhesUserData = funcionario;
         this.showModalDetalhes = true;
+    }
+
+    public addDependente(funcionario: Usuario) {
+        funcionario.dependentes.push({
+            cpf: '000.000.000-00',
+            nome: '',
+            parentesco: ''
+        })
     }
 }

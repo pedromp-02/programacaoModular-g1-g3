@@ -76,14 +76,27 @@ export class AppService {
         }
     }
 
-    public addFuncionario(nome: string, usuario: string, email: string, senha: string) {
+    public addFuncionario(dados: Usuario) {
         try {
             return new Promise<any>((resolve, reject) => {
                 /**
                  * Busca os dados no servidor
                  */
                 this.httpClientModule
-                    .put<any>(`${this.apiUrl}/funcionarios/add`, { nome, usuario, email, senha },
+                    .put<any>(`${this.apiUrl}/funcionarios/add`, 
+                    { 
+                        nome: dados.nome,
+                        usuario: dados.usuario,
+                        email: dados.email,
+                        cpf: dados.cpf,
+                        cargo: dados.cargo,
+                        salario: dados.salario,
+                        dataAdmissao: dados.dataAdmissao,
+                        dataNascimento: dados.dataNascimento,
+                        endereco: dados.endereco,
+                        dependentes: dados.dependentes,
+                        senha: dados.senha
+                    },
                     {
                         headers: new HttpHeaders ({
                             'Content-Type': 'application/json; charset=utf-8',
@@ -100,14 +113,27 @@ export class AppService {
         }
     }
 
-    public editFuncionario(id: string, nome: string, usuario: string, email: string, senha: string) {
+    public editFuncionario(dados: Usuario) {
         try {
             return new Promise<any>((resolve, reject) => {
                 /**
                  * Busca os dados no servidor
                  */
                 this.httpClientModule
-                    .post<any>(`${this.apiUrl}/funcionarios/${id}`, { nome, usuario, email, senha },
+                    .post<any>(`${this.apiUrl}/funcionarios/${dados._id}`, 
+                    {
+                        nome: dados.nome,
+                        usuario: dados.usuario,
+                        email: dados.email,
+                        cpf: dados.cpf,
+                        cargo: dados.cargo,
+                        salario: dados.salario,
+                        dataAdmissao: dados.dataAdmissao,
+                        dataNascimento: dados.dataNascimento,
+                        endereco: dados.endereco,
+                        dependentes: dados.dependentes,
+                        senha: dados.senha
+                    },
                     {
                         headers: new HttpHeaders ({
                             'Content-Type': 'application/json; charset=utf-8',

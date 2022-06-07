@@ -32,10 +32,6 @@ export class DadosPessoaisComponent {
         this.gridColumnsToDisplay = this.gridColumns.map(col => col.name);
     }
 
-    public getCpfFormatado(cpf: number): string {
-        return cpf.toString().replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
-    }
-
     get salario() {
         return "R$ " + this.userData.salario.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }

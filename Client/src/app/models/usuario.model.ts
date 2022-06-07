@@ -9,7 +9,7 @@ export class Endereco {
 export class Dependente {
     public nome!: string;
     public parentesco!: string;
-    public cpf!: number;
+    public cpf!: string;
 }
 
 export class Usuario {
@@ -21,7 +21,8 @@ export class Usuario {
     public salario!: number;
     public dataAdmissao!: string;
     public dataNascimento!: string;
-    public cpf!: number;
+    public cpf!: string;
+    public senha!: string;
     public endereco!: Endereco;
     public dependentes!: Array<Dependente>;
     public possuiPermissaoRH!: boolean;

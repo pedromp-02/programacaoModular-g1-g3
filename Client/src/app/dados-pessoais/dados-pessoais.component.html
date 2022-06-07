@@ -22,7 +22,7 @@
 
             <div class="line">
                 <h2>CPF:</h2>
-                <p>{{ getCpfFormatado(userData.cpf) }}</p>
+                <p>{{ userData.cpf }}</p>
             </div>
 
             <div class="line">
@@ -61,10 +61,7 @@
             <table mat-table [dataSource]="gridData">
                 <ng-container [matColumnDef]="column.name" *ngFor="let column of gridColumns">
                     <th mat-header-cell *matHeaderCellDef>{{ column.display }}</th>
-                    <td mat-cell *matCellDef="let element">
-                        <span *ngIf="column.name !== 'cpf'">{{ element[column.name] }}</span>
-                        <span *ngIf="column.name === 'cpf'">{{ getCpfFormatado(element.cpf) }}</span>
-                    </td>
+                    <td mat-cell *matCellDef="let element">{{ element[column.name] }}</td>
                 </ng-container>
         
                 <tr mat-header-row *matHeaderRowDef="gridColumnsToDisplay"></tr>
