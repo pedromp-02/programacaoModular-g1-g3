@@ -37,7 +37,14 @@ export class AppService {
                             resolve(new Login(loginData.message, loginData.auth,  loginData.user));
                         }
                     })
-                    .catch(e => resolve(e));
+                    .catch((loginData?: Login) => {
+                        if (loginData === undefined) {
+                            resolve(new Login('', '', undefined))
+                        }
+                        else {
+                            resolve(new Login(loginData.message, loginData.auth,  loginData.user));
+                        }
+                    });
             });
         }
         catch (e) {

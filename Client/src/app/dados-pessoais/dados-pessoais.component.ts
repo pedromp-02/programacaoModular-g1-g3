@@ -10,6 +10,7 @@ import { Usuario } from '../models/usuario.model';
 
 export class DadosPessoaisComponent {
     @Input() userData!: Usuario;
+    @Input() paddingBottom!: boolean;
 
     public gridData: MatTableDataSource<any> = new MatTableDataSource();
     public gridColumns: Array<any> = [];

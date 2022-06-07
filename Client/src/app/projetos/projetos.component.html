@@ -33,7 +33,8 @@
                     <th mat-header-cell *matHeaderCellDef>{{ column.display }}</th>
 
                     <td mat-cell *matCellDef="let element">
-                        <span *ngIf="column.name !== 'controls'">{{ element[column.name] }}</span>
+                        <span *ngIf="column.name !== 'participantes' && column.name !== 'controls'">{{ element[column.name] }}</span>
+                        <span *ngIf="column.name === 'participantes'">{{ getParticipantesProjeto(element.participantes) }}</span>
 
                         <div *ngIf="column.name === 'controls'">
                             <button mat-icon-button (click)="openModal(element._id)">

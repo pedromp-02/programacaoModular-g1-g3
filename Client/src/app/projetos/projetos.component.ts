@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource } from '@angular/material/table';
 import { AppService } from '../app.service';
-import { Projeto } from '../models/projetos.model';
+import { Participante, Projeto } from '../models/projetos.model';
 import { Usuario } from '../models/usuario.model';
 
 @Component({
@@ -192,5 +192,24 @@ export class ProjetosComponent implements OnInit {
         this.snackBar.open(message, 'Fechar');
         this.data = [];
         this.getData();
+    }
+
+    public getParticipantesProjeto(participantes: Array<Participante>) {
+        let str = '';
+
+        for (let i = 0; i < participantes.length; i++) {
+            str += participantes[i].nome.split(" ")[0];
+
+            if (i !== (participantes.length - 1)) {
+                if (i === (participantes.length - 2)) {
+                    str += ' e ';
+                }
+                else {
+                    str += ', ';
+                }
+            }
+        }
+
+        return str;
     }
 }

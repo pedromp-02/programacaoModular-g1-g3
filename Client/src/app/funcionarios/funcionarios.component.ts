@@ -16,7 +16,7 @@ export class FuncionariosComponent implements OnInit {
     /**
      * Grids
      */
-    private data: Array<Usuario> = [];
+    public data: Array<Usuario> = [];
     public componentIsLoading: boolean = true;
 
     public gridData: MatTableDataSource<any> = new MatTableDataSource();
@@ -34,6 +34,12 @@ export class FuncionariosComponent implements OnInit {
     public modalEmail: string = '';
     public modalSenha: string = '';
     public modalHidePassword: boolean = true;
+
+    /**
+     * Modal detalhes
+     */
+    public showModalDetalhes: boolean = false;
+    public modalDetalhesUserData!: Usuario;
 
     constructor(
         private appService: AppService,
@@ -124,6 +130,13 @@ export class FuncionariosComponent implements OnInit {
     }
 
     /**
+     * Função responsável por ocultar a modal de detalhes do funcionario
+     */
+    public hideModalDetalhes() {
+        this.showModalDetalhes = false;
+    }
+
+    /**
      * Botão de remoção do grid
      */
     public async gridControlRemoveClick(id: string) {
@@ -174,5 +187,10 @@ export class FuncionariosComponent implements OnInit {
         this.snackBar.open(message, 'Fechar');
         this.data = [];
         this.getData();
+    }
+
+    public showDetailsFuncionario(funcionario: Usuario) {
+        this.modalDetalhesUserData = funcionario;
+        this.showModalDetalhes = true;
     }
 }

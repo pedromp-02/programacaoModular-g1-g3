@@ -79,11 +79,27 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
         height: 450px;
         top: calc(50% - 225px);
     }
+
+    &.s4 .modal-container {
+        height: 500px;
+        width: 700px;
+        text-align: left;
+        top: calc(50% - 250px);
+        left: calc(50% - 350px);
+        overflow-y: auto;
+    }
+}
+
+.mat-tab-group {
+    position: relative;
 }
 
 .content {
     margin-top: 20px;
-    padding-bottom: 80px;
+
+    &:not(.no-padding) {
+        padding-bottom: 80px;
+    }
 
     .title {
         display: flex;

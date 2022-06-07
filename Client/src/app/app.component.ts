@@ -16,6 +16,7 @@ export class AppComponent {
     public userIsLogged: boolean = false;
     public userLoginData: string = '';
     public userData!: Usuario;
+    public loadingLogin = false;
 
     /**
      * Controla a exibicao da modal de login
@@ -46,6 +47,8 @@ export class AppComponent {
      * Função responsável por enviar a requisição de login
      */
     public async doLogin() {
+        this.loadingLogin = true;
+
         const loginData = await this.appService.login(this.formLoginEmail, this.formLoginSenha);
 
         if (loginData.isSuccessLogin()) {
@@ -69,6 +72,8 @@ export class AppComponent {
             this.userIsLogged = false;
             this.snackBar.open(message, 'Fechar');
         }
+
+        this.loadingLogin = false;
     }
 
     /**

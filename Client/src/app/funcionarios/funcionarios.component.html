@@ -1,7 +1,7 @@
 <div class="content" *ngIf="!userData.possuiPermissaoRH">
     <div class="container">
         <div class="title">
-            <h1>Projetos</h1>
+            <h1>Funcionários</h1>
         </div>
         
         <p>Você não possui permissão para visualizar os funcionários.</p>
@@ -11,7 +11,7 @@
 <div class="content" *ngIf="userData.possuiPermissaoRH">
     <div class="container">
         <div class="title">
-            <h1>Funcionários</h1>
+            <h1>Funcionários ({{ data.length }})</h1>
 
             <div *ngIf="userData.possuiPermissaoRH">
                 <input (keyup)="applyFilter($event)" placeholder="Filtrar dados">
@@ -34,6 +34,10 @@
 
                             <button mat-icon-button (click)="gridControlRemoveClick(element._id)" *ngIf="element._id !== userData._id">
                                 <mat-icon>remove_circle</mat-icon>
+                            </button>
+
+                            <button mat-icon-button (click)="showDetailsFuncionario(element)" *ngIf="element._id !== userData._id">
+                                <mat-icon>visibility</mat-icon>
                             </button>
                         </div>
                     </td>
@@ -96,5 +100,13 @@
                 <button mat-raised-button color="primary" (click)="actionModal(modal.role)">{{ modal.role === 'add' ? 'Adicionar' : 'Salvar' }}</button>
             </div>
         </div>
+    </div>
+</div>
+
+<div class="modal s4" *ngIf="showModalDetalhes">
+    <div class="modal-background" (click)="hideModalDetalhes()"></div>
+
+    <div class="modal-container">
+        <app-dados-pessoais [userData]="modalDetalhesUserData" [paddingBottom]="false"></app-dados-pessoais>
     </div>
 </div>
