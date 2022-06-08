@@ -77,11 +77,18 @@ class funcionariosClass(Resource):
 			if usuarioLogado["possuiPermissaoRH"] != True:
 				return {'message': 'Você não possui permissão para incluir um funcionário.'}, 401
 
-			if 'nome' not in request.json:
-				return {'message': 'O nome é obrigatório.'}, 200
-
 			if 'email' not in request.json:
 				return {'message': 'o email é obrigatório.'}, 200
+
+			# Verifica se o usuário já está cadastrado
+			if self.busca_funcionario_dado(request.json["email"], 'email'):
+				return {'message': 'O funcionário informado já está cadastrado.'}, 200
+
+			if self.busca_funcionario_dado(request.json["cpf"], 'cpf'):
+				return {'message': 'O funcionário informado já está cadastrado.'}, 200
+
+			if 'nome' not in request.json:
+				return {'message': 'O nome é obrigatório.'}, 200
 
 			if 'usuario' not in request.json:
 				return {'message': 'O usuário é obrigatório.'}, 200
@@ -220,6 +227,13 @@ class funcionariosClass(Resource):
 			return {'message': 'Ocorreu um erro interno. Tente novamente mais tarde.'}, 500
 
 	# Função responsável por verificar se um email de usuário já existe, para não ter repetições de emails no DB.
+	def busca_funcionario_dado(self, email, dado):
+		for user in self.db.usuarios.find({dado: email}):
+			if user[dado] == email:
+				return True
+
+		return False
+	
 	def busca_funcionario(self, id):
 		for user in self.db.usuarios.find({'_id': id}):
 			if user["_id"] == id:
