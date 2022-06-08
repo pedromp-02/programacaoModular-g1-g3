@@ -18,13 +18,40 @@ salt2 =  "9a1ff6597127ae6e485cc1ff6a118fc7" #grupo 1 cria salt com 32 caracteres
 def testasenhacorreta():
   assert modulo_cripto.generate_hashed_password(type, password,salt1,iterations,dklen) == modulo_cripto.generate_hashed_password(type, truepassword,salt1,iterations,dklen)
  
+print(f"Testa se a senha correta digitada no login (truepassword = {password}) corresponde a senha que o usuário criou no cadastro (password = {password}). Se não houver erro o teste foi bem-sucedido")
 
+try:
+  testasenhacorreta()
+  print("Resultado: successo")
+except:
+  print("Resultado: falha")
 
 def testasenhaerrada():
   assert modulo_cripto.generate_hashed_password(type, password,salt1,iterations,dklen) != modulo_cripto.generate_hashed_password(type, falsepassword,salt1,iterations,dklen)
 
-
-
+print(f"Testa se a senha errada digitada no login (falsepassword = {falsepassword}) NÃO corresponde a senha que o usuário criou no cadastro (password = {password}). Se não houver erro o teste foi bem-sucedido")
+try:
+  testasenhaerrada()
+  print("Resultado: successo")
+except:
+  print("Resultado: falha")
 
 def testasaltsdiferentes():
   assert modulo_cripto.generate_hashed_password(type, password,salt1,iterations,dklen) != modulo_cripto.generate_hashed_password(type, password,salt2,iterations,dklen)
+
+print(f"Testa se a função retorna valores distintos para os mesmos parâmetros apenas com salts (salt1 = {salt1}, salt2 = {salt2}) diferentes" )
+try:
+  testasaltsdiferentes()
+  print("Resultado: sucesso")
+except:
+  print("Resultado: falha")
+  
+  def testaiterationsdiferentes():
+  assert modulo_cripto.generate_hashed_password(type, password,salt1,iterations,dklen) != modulo_cripto.generate_hashed_password(type, password,salt1,iterations_test,dklen)
+
+print(f"Testa se a função retorna valores distintos para os mesmos parâmetros apenas com iterações (iterations = {iterations}, iterations_test = {iterations_test}) diferentes" )
+try:
+  testaiterationsdiferentes()
+  print("Resultado: sucesso")
+except:
+  print("Resultado: falha")
