@@ -82,18 +82,28 @@ class projetosClass(Resource):
 			if 'descricao' not in request.json:
 				return {'message': 'A descrição do projeto é obrigatória.'}, 200
 
+			if 'dataInicio' not in request.json:
+				return {'message': 'A data de início do projeto é obrigatória.'}, 200
+
+			if 'dataFim' not in request.json:
+				return {'message': 'A data de término do projeto é obrigatória.'}, 200
+
 			if 'participantes' not in request.json:
 				return {'message': 'Os participantes do projeto são obrigatórios.'}, 200
 
 			id = urandom(5).hex()
 			nome = request.json["nome"]
 			descricao = request.json["descricao"]
+			dataInicio = request.json["dataInicio"]
+			dataFim = request.json["dataFim"]
 			participantes = request.json["participantes"]
 
 			self.db.projetos.insert_one({
 				'_id': id,
 				'nome': nome,
 				'descricao': descricao,
+				'dataInicio': dataInicio,
+				'dataFim': dataFim,
 				'participantes': participantes
 			})
 
@@ -123,6 +133,12 @@ class projetosClass(Resource):
 
 			if 'descricao' in request.json:
 				setObject["descricao"] = request.json["descricao"]
+
+			if 'dataInicio' in request.json:
+				setObject["dataInicio"] = request.json["dataInicio"]
+
+			if 'dataFim' in request.json:
+				setObject["dataFim"] = request.json["dataFim"]
 
 			if 'participantes' in request.json:
 				setObject["participantes"] = request.json["participantes"]

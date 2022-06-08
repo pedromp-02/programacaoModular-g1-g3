@@ -148,9 +148,13 @@ export class ProjetosComponent implements OnInit {
             message = data.message;
         }
 
-        this.data = [];
         this.snackBar.open(message, 'Fechar');
-        this.getData();
+        
+        this.data = [];
+        await this.getData();
+
+        this.seusProjetosData = [];
+        await this.getUserData();
     }
 
     /**
@@ -177,7 +181,7 @@ export class ProjetosComponent implements OnInit {
         }
 
         if (role === 'add') {
-            //data = await this.appService.addProjeto(this.modalProjetoData);
+            data = await this.appService.addProjeto(this.modalProjetoData);
 
             if (data.hasOwnProperty('status')) {
                 message = data.error.message;
@@ -187,7 +191,7 @@ export class ProjetosComponent implements OnInit {
             }
         }
         else {
-            //data = await this.appService.editProjeto(this.modalProjetoData);
+            data = await this.appService.editProjeto(this.modalProjetoData);
 
             if (data.hasOwnProperty('status')) {
                 message = data.error.message;
@@ -199,8 +203,12 @@ export class ProjetosComponent implements OnInit {
 
         this.hideModal();
         this.snackBar.open(message, 'Fechar');
+
         this.data = [];
-        this.getData();
+        await this.getData();
+
+        this.seusProjetosData = [];
+        await this.getUserData();
     }
 
     public getParticipantesProjeto(participantes: Array<Participante>) {
@@ -238,7 +246,7 @@ export class ProjetosComponent implements OnInit {
     /**
      * Valida dados
      */
-     private validaData(text: string, campo: string) {
+    private validaData(text: string, campo: string) {
         if(!/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(campo)) {
             this.snackBar.open(`A data de ${text} não está em um formato válido.`, 'Fechar');
             return false;
