@@ -1,6 +1,7 @@
 from flask import request
 from flask_restful import Resource
 from modulo_db.dbClass import dbClass
+from app import AppContext
 import modulo_cripto
 import datetime
 import jwt
@@ -8,17 +9,14 @@ import jwt
 # Classe que gera o token de autenticação e valida o mesmo
 class userModel():
 	@staticmethod
-	def encode_auth_token(cargo, id):
+	def encode_auth_token(user):
 		try:
 			payload = {
 				'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=60),
-				'sub': {
-					'cargo': cargo,
-					'id': id
-				}
+				'sub': user
 			}
 
-			return jwt.encode(payload, 'chaveSecreta', algorithm="HS256")
+			return jwt.encode(payload, AppContext.getTokenSecret(), algorithm="HS256")
 
 		except Exception as e:
 			print(e)
@@ -27,7 +25,7 @@ class userModel():
 	@staticmethod
 	def decode_auth_token(auth_token):
 		try:
-			return jwt.decode(auth_token, 'chaveSecreta', algorithms=["HS256"])
+			return jwt.decode(auth_token, AppContext.getTokenSecret(), algorithms=["HS256"])
 
 		except Exception as e:
 			return 'Token inválido. Faça login novamente.'
@@ -80,7 +78,7 @@ class loginClass(Resource):
 			email = request.json["email"]
 			senha = request.json["senha"]
 
-			# Realiza a busca do usuário
+			# Realiza a busca do 'usuário
 			usuarios = self.db.usuarios.find({"email": email}).limit(1)
 
 			# Se retornar uma quantidade de usuários diferente de 1, loguin falhou
@@ -102,17 +100,15 @@ class loginClass(Resource):
 					usuario.pop("salt")
 
 				# Gera o token de autenticação
-				auth_token = userModel.encode_auth_token(usuario["cargo"], usuario["_id"])
+				auth_token = userModel.encode_auth_token(usuario)
 
 				if auth_token == None:
 					return {'message': 'Ocorreu um erro interno. Tente novamente mais tarde.'}, 500
 
 				# Cria a resposta
 				response = {
-					'message': 'OK.',
-					'nome': usuario["nome"],
-					'cargo': usuario["cargo"],
-					'auth': auth_token
+					'auth': auth_token,
+					'user': usuario
 				}
 
 				return response, 200

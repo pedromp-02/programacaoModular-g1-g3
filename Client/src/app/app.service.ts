@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { Usuario } from './models/usuario.model';
 import { Login } from './models/login.model';
-import { Projeto } from './models/projetos.model';
+import { ParticipanteAPI, Projeto } from './models/projetos.model';
 
 @Injectable({
     providedIn: 'root'
@@ -11,8 +11,15 @@ import { Projeto } from './models/projetos.model';
 
 export class AppService {
     private apiUrl: string = environment.apiUrl;
+    private authJWT: string = '';
+
+    private funcionariosData!: Array<Usuario>;
 
     constructor(private httpClientModule: HttpClient) {
+    }
+
+    public setJWT(jwt: string) {
+        this.authJWT = jwt;
     }
 
     public login(email: string, senha: string): Promise<Login> {
@@ -24,8 +31,22 @@ export class AppService {
                 this.httpClientModule
                     .post<Login>(`${this.apiUrl}/login`, { email, senha })
                     .toPromise()
-                    .then((loginData: any) => resolve(loginData))
-                    .catch(e => resolve(e));
+                    .then((loginData?: Login) => {
+                        if (loginData === undefined) {
+                            resolve(new Login('', '', undefined))
+                        }
+                        else {
+                            resolve(new Login(loginData.message, loginData.auth,  loginData.user));
+                        }
+                    })
+                    .catch((loginData?: Login) => {
+                        if (loginData === undefined) {
+                            resolve(new Login('', '', undefined))
+                        }
+                        else {
+                            resolve(new Login(loginData.message, loginData.auth,  loginData.user));
+                        }
+                    });
             });
         }
         catch (e) {
@@ -36,13 +57,27 @@ export class AppService {
     public getFuncionarios(): Promise<Array<Usuario>> {
         try {
             return new Promise<Array<Usuario>>((resolve, reject) => {
+                if (Array.isArray(this.funcionariosData)) {
+                    resolve(this.funcionariosData);
+                    return;
+                }    
+
                 /**
                  * Busca os dados no servidor
                  */
                 this.httpClientModule
-                    .get<Array<Usuario>>(`${this.apiUrl}/funcionarios/user`)
+                    .get<Array<Usuario>>(`${this.apiUrl}/funcionarios/user`,
+                    {
+                        headers: new HttpHeaders ({
+                            'Content-Type': 'application/json; charset=utf-8',
+                            'Authorization': 'Bearer ' + this.authJWT
+                        })
+                    })
                     .toPromise()
-                    .then((funcionariosData: any) => resolve(funcionariosData))
+                    .then((funcionariosData: any) => {
+                        this.funcionariosData = funcionariosData;
+                        resolve(funcionariosData);
+                    })
                     .catch(e => resolve(e));
             });
         }
@@ -51,18 +86,31 @@ export class AppService {
         }
     }
 
-    public addFuncionario(jwt: string, nome: string, usuario: string, email: string, senha: string) {
+    public addFuncionario(dados: Usuario) {
         try {
             return new Promise<any>((resolve, reject) => {
                 /**
                  * Busca os dados no servidor
                  */
                 this.httpClientModule
-                    .put<any>(`${this.apiUrl}/funcionarios/add`, { nome, usuario, email, senha },
+                    .put<any>(`${this.apiUrl}/funcionarios/add`, 
+                    { 
+                        nome: dados.nome,
+                        usuario: dados.usuario,
+                        email: dados.email,
+                        cpf: dados.cpf,
+                        cargo: dados.cargo,
+                        salario: dados.salario,
+                        dataAdmissao: dados.dataAdmissao,
+                        dataNascimento: dados.dataNascimento,
+                        endereco: dados.endereco,
+                        dependentes: dados.dependentes,
+                        senha: dados.senha
+                    },
                     {
                         headers: new HttpHeaders ({
                             'Content-Type': 'application/json; charset=utf-8',
-                            'Authorization': 'Bearer ' + jwt
+                            'Authorization': 'Bearer ' + this.authJWT
                         })
                     })
                     .toPromise()
@@ -75,18 +123,31 @@ export class AppService {
         }
     }
 
-    public editFuncionario(jwt: string, id: string, nome: string, usuario: string, email: string, senha: string) {
+    public editFuncionario(dados: Usuario) {
         try {
             return new Promise<any>((resolve, reject) => {
                 /**
                  * Busca os dados no servidor
                  */
                 this.httpClientModule
-                    .post<any>(`${this.apiUrl}/funcionarios/${id}`, { nome, usuario, email, senha },
+                    .post<any>(`${this.apiUrl}/funcionarios/${dados._id}`, 
+                    {
+                        nome: dados.nome,
+                        usuario: dados.usuario,
+                        email: dados.email,
+                        cpf: dados.cpf,
+                        cargo: dados.cargo,
+                        salario: dados.salario,
+                        dataAdmissao: dados.dataAdmissao,
+                        dataNascimento: dados.dataNascimento,
+                        endereco: dados.endereco,
+                        dependentes: dados.dependentes,
+                        senha: dados.senha
+                    },
                     {
                         headers: new HttpHeaders ({
                             'Content-Type': 'application/json; charset=utf-8',
-                            'Authorization': 'Bearer ' + jwt
+                            'Authorization': 'Bearer ' + this.authJWT
                         })
                     })
                     .toPromise()
@@ -99,7 +160,7 @@ export class AppService {
         }
     }
 
-    public removeFuncionario(jwt: string, id: string) {
+    public removeFuncionario(id: string) {
         try {
             return new Promise<any>((resolve, reject) => {
                 /**
@@ -110,7 +171,7 @@ export class AppService {
                     {
                         headers: new HttpHeaders ({
                             'Content-Type': 'application/json; charset=utf-8',
-                            'Authorization': 'Bearer ' + jwt
+                            'Authorization': 'Bearer ' + this.authJWT
                         })
                     })
                     .toPromise()
@@ -130,29 +191,11 @@ export class AppService {
                  * Busca os dados no servidor
                  */
                 this.httpClientModule
-                    .get<Array<Projeto>>(`${this.apiUrl}/projetos/user`)
-                    .toPromise()
-                    .then((projetosData: any) => resolve(projetosData))
-                    .catch(e => resolve(e));
-            });
-        }
-        catch (e) {
-            return Promise.reject(e);
-        }
-    }
-
-    public addProjeto(jwt: string, nome: string, descricao: string, participantes: Array<string>) {
-        try {
-            return new Promise<any>((resolve, reject) => {
-                /**
-                 * Busca os dados no servidor
-                 */
-                this.httpClientModule
-                    .put<any>(`${this.apiUrl}/projetos/add`, { nome, descricao, participantes },
+                    .get<Array<Projeto>>(`${this.apiUrl}/projetos/list`,
                     {
                         headers: new HttpHeaders ({
                             'Content-Type': 'application/json; charset=utf-8',
-                            'Authorization': 'Bearer ' + jwt
+                            'Authorization': 'Bearer ' + this.authJWT
                         })
                     })
                     .toPromise()
@@ -165,18 +208,18 @@ export class AppService {
         }
     }
 
-    public editProjeto(jwt: string, id: string, nome: string, descricao: string, participantes: Array<string>) {
+    public getProjetosUserLogado(): Promise<Array<Projeto>> {
         try {
-            return new Promise<any>((resolve, reject) => {
+            return new Promise<Array<Projeto>>((resolve, reject) => {
                 /**
                  * Busca os dados no servidor
                  */
                 this.httpClientModule
-                    .post<any>(`${this.apiUrl}/projetos/${id}`, { nome, descricao, participantes },
+                    .get<Array<Projeto>>(`${this.apiUrl}/projetos/mine`,
                     {
                         headers: new HttpHeaders ({
                             'Content-Type': 'application/json; charset=utf-8',
-                            'Authorization': 'Bearer ' + jwt
+                            'Authorization': 'Bearer ' + this.authJWT
                         })
                     })
                     .toPromise()
@@ -189,7 +232,85 @@ export class AppService {
         }
     }
 
-    public removeProjeto(jwt: string, id: string) {
+    public addProjeto(projeto: Projeto) {
+        try {
+            return new Promise<any>((resolve, reject) => {
+                let participantes: Array<ParticipanteAPI> = new Array<ParticipanteAPI>();
+
+                for (let participante of projeto.participantes) {
+                    let participanteAPIData = new ParticipanteAPI();
+                    participanteAPIData.fillData(participante);
+
+                    participantes.push(participanteAPIData);
+                }
+
+                /**
+                 * Busca os dados no servidor
+                 */
+                this.httpClientModule
+                    .put<any>(`${this.apiUrl}/projetos/add`, {
+                        nome: projeto.nome,
+                        descricao: projeto.descricao,
+                        dataInicio: projeto.dataInicio,
+                        dataFim: projeto.dataFim,
+                        participantes
+                    },
+                    {
+                        headers: new HttpHeaders ({
+                            'Content-Type': 'application/json; charset=utf-8',
+                            'Authorization': 'Bearer ' + this.authJWT
+                        })
+                    })
+                    .toPromise()
+                    .then((projetosData: any) => resolve(projetosData))
+                    .catch(e => resolve(e));
+            });
+        }
+        catch (e) {
+            return Promise.reject(e);
+        }
+    }
+
+    public editProjeto(projeto: Projeto) {
+        try {
+            return new Promise<any>((resolve, reject) => {
+                let participantes: Array<ParticipanteAPI> = new Array<ParticipanteAPI>();
+
+                for (let participante of projeto.participantes) {
+                    let participanteAPIData = new ParticipanteAPI();
+                    participanteAPIData.fillData(participante);
+
+                    participantes.push(participanteAPIData);
+                }
+
+                /**
+                 * Busca os dados no servidor
+                 */
+                this.httpClientModule
+                    .post<any>(`${this.apiUrl}/projetos/${projeto._id}`, {
+                        nome: projeto.nome,
+                        descricao: projeto.descricao,
+                        dataInicio: projeto.dataInicio,
+                        dataFim: projeto.dataFim,
+                        participantes
+                    },
+                    {
+                        headers: new HttpHeaders ({
+                            'Content-Type': 'application/json; charset=utf-8',
+                            'Authorization': 'Bearer ' + this.authJWT
+                        })
+                    })
+                    .toPromise()
+                    .then((projetosData: any) => resolve(projetosData))
+                    .catch(e => resolve(e));
+            });
+        }
+        catch (e) {
+            return Promise.reject(e);
+        }
+    }
+
+    public removeProjeto(id: string) {
         try {
             return new Promise<any>((resolve, reject) => {
                 /**
@@ -200,7 +321,7 @@ export class AppService {
                     {
                         headers: new HttpHeaders ({
                             'Content-Type': 'application/json; charset=utf-8',
-                            'Authorization': 'Bearer ' + jwt
+                            'Authorization': 'Bearer ' + this.authJWT
                         })
                     })
                     .toPromise()

@@ -1,0 +1,133 @@
+<div class="content">
+    <div class="container">
+        <div class="title">
+            <h1>Seus projetos ({{ seusProjetosData.length }})</h1>
+        </div>
+
+        <div class="table" *ngIf="seusProjetosData.length > 0">
+            <table mat-table [dataSource]="gridProjetosUserData">
+                <ng-container [matColumnDef]="column.name" *ngFor="let column of gridProjetosUserColumns">
+                    <th mat-header-cell *matHeaderCellDef>{{ column.display }}</th>
+                    <td mat-cell *matCellDef="let element">{{ element[column.name] }}</td>
+                </ng-container>
+        
+                <tr mat-header-row *matHeaderRowDef="gridProjetosUserColumnsToDisplay"></tr>
+                <tr mat-row *matRowDef="let row; columns: gridProjetosUserColumnsToDisplay;"></tr>
+            </table>
+        </div>
+
+        <p *ngIf="seusProjetosData.length === 0">Você ainda não está alocado em nenhum projeto.</p>
+    </div>
+</div>
+
+<div class="content" *ngIf="userData.possuiPermissaoRH">
+    <div class="container">
+        <div class="title">
+            <h1>Todos os projetos ({{ data.length }})</h1>       
+            <button mat-raised-button *ngIf="userData.possuiPermissaoRH" (click)="openModal()">Adicionar</button>
+        </div>
+
+        <div class="table" *ngIf="!componentIsLoading">
+            <table mat-table [dataSource]="gridData">
+                <ng-container [matColumnDef]="column.name" *ngFor="let column of gridColumns">
+                    <th mat-header-cell *matHeaderCellDef>{{ column.display }}</th>
+
+                    <td mat-cell *matCellDef="let element">
+                        <span *ngIf="column.name !== 'participantes' && column.name !== 'controls'">{{ element[column.name] }}</span>
+                        <span *ngIf="column.name === 'participantes'">{{ getParticipantesProjeto(element.participantes) }}</span>
+
+                        <div *ngIf="column.name === 'controls'">
+                            <button mat-icon-button (click)="openModal(element._id)">
+                                <mat-icon>edit</mat-icon>
+                            </button>
+
+                            <button mat-icon-button (click)="gridControlRemoveClick(element._id)">
+                                <mat-icon>remove_circle</mat-icon>
+                            </button>
+                        </div>
+                    </td>
+                </ng-container>
+        
+                <tr mat-header-row *matHeaderRowDef="gridColumnsToDisplay"></tr>
+                <tr mat-row *matRowDef="let row; columns: gridColumnsToDisplay;"></tr>
+            </table>
+        </div>
+
+        <div class="table center" *ngIf="componentIsLoading">
+            <mat-spinner></mat-spinner>
+        </div>
+    </div>
+</div>
+
+<div class="modal s4" *ngIf="showModal">
+    <div class="modal-background" (click)="hideModal()"></div>
+
+    <div class="modal-container">
+        <h1>{{ modal.title }}</h1>
+
+        <div class="form">
+            <div class="line">
+                <mat-form-field appearance="outline">
+                    <mat-label>Nome</mat-label>
+                    <input matInput placeholder="Nome" [(ngModel)]="modalProjetoData.nome">
+                </mat-form-field>
+            </div>
+
+            <div class="line">
+                <mat-form-field appearance="outline">
+                    <mat-label>Descrição</mat-label>
+                    <input matInput placeholder="Descrição" [(ngModel)]="modalProjetoData.descricao">
+                </mat-form-field>
+            </div>
+
+            <div class="line">
+                <mat-form-field appearance="outline">
+                    <mat-label>Data de início</mat-label>
+                    <input matInput placeholder="Descrição" [(ngModel)]="modalProjetoData.dataInicio">
+                </mat-form-field>
+            </div>
+
+            <div class="line">
+                <mat-form-field appearance="outline">
+                    <mat-label>Data de término</mat-label>
+                    <input matInput placeholder="Descrição" [(ngModel)]="modalProjetoData.dataFim">
+                </mat-form-field>
+            </div>
+        </div>
+
+         <h1 class="margin-top">Participantes ({{ modalProjetoData.participantes.length }}) <a href="javascript:void(0)" (click)="addParticipante(modalProjetoData)">Adicionar</a></h1>
+
+        <div class="form">
+            <div class="super-line" *ngFor="let participante of modalProjetoData.participantes; let i = index;" [attr.data-index]="i">
+                <div class="title">
+                    Participante {{ i + 1 }}
+                    <a href="javascript:void(0)" (click)="removeParticipante(modalProjetoData, i)">Remover</a>
+                </div>
+
+                <div class="line">
+                    <mat-form-field appearance="outline">
+                        <mat-label>Funcionário</mat-label>
+
+                        <mat-select required [(value)]="participante.matricula">
+                            <mat-option>--</mat-option>
+                            <mat-option *ngFor="let funcionario of funcionariosData" [value]="funcionario._id">
+                                {{ funcionario.nome }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+
+                <div class="line">
+                    <mat-form-field appearance="outline">
+                        <mat-label>Carga Horária Semanal</mat-label>
+                        <input matInput placeholder="Carga Horária Semanal" [(ngModel)]="participante.cargaHorariaSemanal">
+                    </mat-form-field>
+                </div>
+            </div>
+
+            <div class="line button">
+                <button mat-raised-button color="primary" (click)="actionModal(modal.role)">{{ modal.role === 'add' ? 'Adicionar' : 'Salvar' }}</button>
+            </div>            
+        </div>
+    </div>
+</div>

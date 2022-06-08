@@ -1,22 +1,25 @@
 import { CommonModule } from '@angular/common';
-import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
+import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatPaginatorIntl } from '@angular/material/paginator';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
-import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatSortModule } from '@angular/material/sort';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatSelectModule } from '@angular/material/select';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AppService } from './app.service';
-import { MatPaginatorIntl } from '@angular/material/paginator';
+import { DadosPessoaisComponent } from './dados-pessoais/dados-pessoais.component';
+import { FuncionariosComponent } from './funcionarios/funcionarios.component';
+import { ProjetosComponent } from './projetos/projetos.component';
 
 /**
  * Função responsável por traduzir a paginação dos grids.
@@ -59,13 +62,16 @@ export function getPtPaginatorIntl() {
         MatIconModule,
         MatSnackBarModule,
         MatTableModule,
-        MatPaginatorModule,
-        MatSortModule,
         MatProgressSpinnerModule,
+        MatTabsModule,
+        MatSelectModule,
         AppRoutingModule
     ],
     declarations: [
-        AppComponent
+        AppComponent,
+        DadosPessoaisComponent,
+        FuncionariosComponent,
+        ProjetosComponent
     ],
     providers: [
         AppService,

@@ -1,0 +1,72 @@
+<div class="content" [class.no-padding]="paddingBottom !== undefined && !paddingBottom">
+    <div class="container">
+        <div class="title">
+            <h1>Dados pessoais</h1>
+        </div>
+
+        <div class="side-by-side">
+            <div class="line">
+                <h2>Nome completo:</h2>
+                <p>{{ userData.nome }}</p>
+            </div>
+
+            <div class="line">
+                <h2>Email:</h2>
+                <p>{{ userData.email }}</p>
+            </div>
+
+            <div class="line">
+                <h2>Usuário:</h2>
+                <p>{{ userData.usuario }}</p>
+            </div>
+
+            <div class="line">
+                <h2>CPF:</h2>
+                <p>{{ userData.cpf }}</p>
+            </div>
+
+            <div class="line">
+                <h2>Cargo:</h2>
+                <p>{{ userData.cargo }}</p>
+            </div>
+
+            <div class="line">
+                <h2>Salário atual:</h2>
+                <p>{{ salario }}</p>
+            </div>
+
+            <div class="line">
+                <h2>Data de nascimento:</h2>
+                <p>{{ userData.dataNascimento }}</p>
+            </div>
+
+            <div class="line">
+                <h2>Data de admissão:</h2>
+                <p>{{ userData.dataAdmissao }}</p>
+            </div>
+
+            <div class="line blank"></div>
+
+            <div class="line entire">
+                <h2>Endereço:</h2>
+                <p>{{ endereco }}</p>
+            </div>
+        </div>
+
+        <div class="title">
+            <h1>Dependentes ({{ userData.dependentes.length }})</h1>
+        </div>
+
+        <div class="table">
+            <table mat-table [dataSource]="gridData">
+                <ng-container [matColumnDef]="column.name" *ngFor="let column of gridColumns">
+                    <th mat-header-cell *matHeaderCellDef>{{ column.display }}</th>
+                    <td mat-cell *matCellDef="let element">{{ element[column.name] }}</td>
+                </ng-container>
+        
+                <tr mat-header-row *matHeaderRowDef="gridColumnsToDisplay"></tr>
+                <tr mat-row *matRowDef="let row; columns: gridColumnsToDisplay;"></tr>
+            </table>
+        </div>
+    </div>
+</div>
