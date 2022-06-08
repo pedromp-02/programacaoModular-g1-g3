@@ -189,7 +189,7 @@ export class FuncionariosComponent implements OnInit {
         }
 
         if (role === 'add') {
-            //data = await this.appService.addFuncionario(this.modalDadosUsuario);
+            data = await this.appService.addFuncionario(this.modalDadosUsuario);
 
             if (data.hasOwnProperty('status')) {
                 message = data.error.message;
@@ -199,7 +199,7 @@ export class FuncionariosComponent implements OnInit {
             }
         }
         else {
-            //data = await this.appService.editFuncionario(this.modalDadosUsuario);
+            data = await this.appService.editFuncionario(this.modalDadosUsuario);
 
             if (data.hasOwnProperty('status')) {
                 message = data.error.message;
@@ -285,8 +285,8 @@ export class FuncionariosComponent implements OnInit {
         }
 
         var parts = campo.split("/");
-        var day = parseInt(parts[1], 10);
-        var month = parseInt(parts[0], 10);
+        var day = parseInt(parts[0], 10);
+        var month = parseInt(parts[1], 10);
         var year = parseInt(parts[2], 10);
 
         if(year < 1000 || year > 3000 || month == 0 || month > 12) {
