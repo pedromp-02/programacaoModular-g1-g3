@@ -8,7 +8,8 @@ password = ''.join(random.choice(string.ascii_letters + string.digits + string.p
 truepassword = password #senha digitada pelo usuario no login corretamente
 falsepassword = password + 'a' #senha digitada pelo usuario no login de forma errada
 type = 'sha256' 
-iterations = 100 
+iterations = 100
+iterations_test = 99
 dklen = 64
 salt1 =  "b70c4693d1d8d802971c154e731eb544" # grupo 1 cria salt com 32 caracteres
 salt2 =  "9a1ff6597127ae6e485cc1ff6a118fc7" #grupo 1 cria salt com 32 caracteres
@@ -46,7 +47,7 @@ try:
 except:
   print("Resultado: falha")
   
- def testaiterationsdiferentes():
+def testaiterationsdiferentes():
   assert modulo_cripto.generate_hashed_password(type, password,salt1,iterations,dklen) != modulo_cripto.generate_hashed_password(type, password,salt1,iterations_test,dklen)
 
 print(f"Testa se a função retorna valores distintos para os mesmos parâmetros apenas com iterações (iterations = {iterations}, iterations_test = {iterations_test}) diferentes" )
