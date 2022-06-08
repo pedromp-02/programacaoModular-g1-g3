@@ -29,7 +29,9 @@ export class FuncionariosComponent implements OnInit {
     public showModal: boolean = false;
     public modal: any = {};
     public modalDadosUsuario!: Usuario;
+    public modalConfirmacaoSenha!: string;
     public modalHidePassword = true;
+    public modalHidePasswordConfirmacao = true;
 
     /**
      * Modal detalhes
@@ -91,6 +93,9 @@ export class FuncionariosComponent implements OnInit {
                 role: 'add'
             };
 
+            this.modalDadosUsuario = new Usuario();
+            this.modalDadosUsuario.fillBlank();
+            this.modalConfirmacaoSenha = '';
             this.showModal = true;
         }
         else {
@@ -101,7 +106,8 @@ export class FuncionariosComponent implements OnInit {
 
             const funcionario = this.data.filter(e => e._id === id)[0];
             this.modalDadosUsuario = Object.assign({}, funcionario);
-
+            this.modalDadosUsuario.senha = '';
+            this.modalConfirmacaoSenha = '';
             this.showModal = true;
         }
     }
@@ -112,6 +118,8 @@ export class FuncionariosComponent implements OnInit {
     public hideModal() {
         this.modalDadosUsuario = new Usuario();
         this.modalHidePassword = true;
+        this.modalHidePasswordConfirmacao = true;
+        this.modalConfirmacaoSenha = '';
 
         this.showModal = false;
     }
@@ -149,8 +157,39 @@ export class FuncionariosComponent implements OnInit {
         let message: string;
         let data: any;
 
+        if (!this.validaNome('funcionário', this.modalDadosUsuario.nome))
+            return;
+        
+        if (!this.validaEmail())
+            return;
+
+        if (!this.validaCPF('digitado', this.modalDadosUsuario.cpf))
+            return;
+
+        if (!this.validaSalario())
+            return;
+
+        if (!this.validaData('nascimento', this.modalDadosUsuario.dataNascimento))
+            return;
+
+        if (!this.validaData('admissão', this.modalDadosUsuario.dataAdmissao))
+            return;
+
+        if (!this.validaSenha())
+            return;
+
+        for (let i = 0; i < this.modalDadosUsuario.dependentes.length; i++) {
+            const dependente = this.modalDadosUsuario.dependentes[i];
+
+            if (!this.validaNome(`dependente ${i + 1}`, dependente.nome))
+                return;
+
+            if (!this.validaCPF(`do dependente ${i + 1}`, dependente.cpf))
+                return;
+        }
+
         if (role === 'add') {
-            data = await this.appService.addFuncionario(this.modalDadosUsuario);
+            //data = await this.appService.addFuncionario(this.modalDadosUsuario);
 
             if (data.hasOwnProperty('status')) {
                 message = data.error.message;
@@ -160,7 +199,7 @@ export class FuncionariosComponent implements OnInit {
             }
         }
         else {
-            data = await this.appService.editFuncionario(this.modalDadosUsuario);
+            //data = await this.appService.editFuncionario(this.modalDadosUsuario);
 
             if (data.hasOwnProperty('status')) {
                 message = data.error.message;
@@ -187,5 +226,101 @@ export class FuncionariosComponent implements OnInit {
             nome: '',
             parentesco: ''
         })
+    }
+
+    public removeDependente(funcionario: Usuario, index: number) {
+        funcionario.dependentes = funcionario.dependentes.filter((e, i) => i !== index);
+    }
+
+    /**
+     * Funções de validação dos dados
+     */
+    private validaNome(text: string, nome: string) {
+        if (nome.search(" ") !== -1) {
+            if (!(/^[a-zA-Zà-ùÀ-Ú ]+$/.test(nome))) {
+                this.snackBar.open(`O nome do ${text} não está em um formato válido.`, 'Fechar');
+                return false;
+            }
+
+            return true;
+        }
+
+        this.snackBar.open(`Digite o nome completo do ${text}`, 'Fechar');
+        return false;
+    }
+
+    private validaEmail() {
+        if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(this.modalDadosUsuario.email)) {
+            return true;
+        }
+
+        this.snackBar.open('O email digitado não é válido.', 'Fechar');
+        return false;
+    }
+
+    private validaCPF(text: string, cpf: string) {
+        if (/^[0-9]{3}.[0-9]{3}.[0-9]{3}-[0-9]{2}$/.test(cpf)) {
+            return true;
+        }
+
+        this.snackBar.open(`O CPF ${text} não está em um formato válido.`, 'Fechar');
+        return false;
+    }
+
+    private validaSalario() {
+        const salario = this.modalDadosUsuario.salario.toString();
+
+        if (/^[0-9]*$/.test(salario) || /^[0-9]*.[0-9]{2}$/.test(salario) || /^[0-9]*,[0-9]{2}$/.test(salario)) {
+            return true;
+        }
+
+        this.snackBar.open('O salário digitado não está em um formato válido.', 'Fechar');
+        return false;
+    }
+
+    private validaData(text: string, campo: string) {
+        if(!/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(campo)) {
+            this.snackBar.open(`A data de ${text} não está em um formato válido.`, 'Fechar');
+            return false;
+        }
+
+        var parts = campo.split("/");
+        var day = parseInt(parts[1], 10);
+        var month = parseInt(parts[0], 10);
+        var year = parseInt(parts[2], 10);
+
+        if(year < 1000 || year > 3000 || month == 0 || month > 12) {
+            this.snackBar.open(`A data de ${text} não é válida.`, 'Fechar');
+            return false;
+        }
+
+        var monthLength = [ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ];
+
+        if(year % 400 == 0 || (year % 100 != 0 && year % 4 == 0))
+            monthLength[1] = 29;
+
+        const currentDate = new Date();
+        const campoDate = new Date(year, month - 1, day, 0, 0, 0, 0);
+
+        if (day > 0 && day <= monthLength[month - 1] && campoDate.getTime() < currentDate.getTime()) {
+            return true;
+        }
+
+        this.snackBar.open(`A data de ${text} não é válida.`, 'Fechar');
+        return false;
+    }
+
+    private validaSenha() {
+        if (this.modalDadosUsuario.senha.length === 0) {
+            this.snackBar.open('A senha não pode ser vazia', 'Fechar');
+            return false;
+        }
+
+        if (this.modalDadosUsuario.senha === this.modalConfirmacaoSenha) {
+            return true;
+        }
+
+        this.snackBar.open('As senhas não são iguais', 'Fechar');
+        return false;
     }
 }

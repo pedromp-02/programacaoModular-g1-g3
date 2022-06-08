@@ -26,4 +26,25 @@ export class Usuario {
     public endereco!: Endereco;
     public dependentes!: Array<Dependente>;
     public possuiPermissaoRH!: boolean;
+
+    public fillBlank() {
+        this.nome = '';
+        this.email = '';
+        this.usuario = '';
+        this.cargo = '';
+        this.salario = 0;
+        this.dataAdmissao = '00/00/0000';
+        this.dataNascimento = '00/00/0000';
+        this.cpf = '000.000.000-00';
+        this.senha = '';
+
+        this.endereco = new Endereco();
+        this.endereco.logradouro = '';
+        this.endereco.bairro = '';
+        this.endereco.cep = 0;
+        this.endereco.cidade = '';
+        this.endereco.estado = '';
+
+        this.dependentes = new Array<Dependente>();
+    }
 }

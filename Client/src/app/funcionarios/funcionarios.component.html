@@ -54,7 +54,7 @@
     </div>
 </div>
 
-<div class="modal s3" *ngIf="showModal">
+<div class="modal s4" *ngIf="showModal">
     <div class="modal-background" (click)="hideModal()"></div>
 
     <div class="modal-container">
@@ -65,7 +65,6 @@
                 <mat-form-field appearance="outline">
                     <mat-label>Nome</mat-label>
                     <input matInput placeholder="Nome" [(ngModel)]="modalDadosUsuario.nome">
-                    <mat-hint>* Obrigatório</mat-hint>
                 </mat-form-field>
             </div>
 
@@ -73,7 +72,6 @@
                 <mat-form-field appearance="outline">
                     <mat-label>Usuário</mat-label>
                     <input matInput placeholder="Usuário" [(ngModel)]="modalDadosUsuario.usuario">
-                    <mat-hint>* Obrigatório</mat-hint>
                 </mat-form-field>
             </div>
 
@@ -81,7 +79,6 @@
                 <mat-form-field appearance="outline">
                     <mat-label>Email</mat-label>
                     <input matInput placeholder="Email" [(ngModel)]="modalDadosUsuario.email">
-                    <mat-hint>* Obrigatório</mat-hint>
                 </mat-form-field>
             </div>
 
@@ -89,7 +86,6 @@
                 <mat-form-field appearance="outline">
                     <mat-label>CPF</mat-label>
                     <input matInput placeholder="CPF" [(ngModel)]="modalDadosUsuario.cpf">
-                    <mat-hint>* Obrigatório</mat-hint>
                 </mat-form-field>
             </div>
 
@@ -97,7 +93,6 @@
                 <mat-form-field appearance="outline">
                     <mat-label>Cargo</mat-label>
                     <input matInput placeholder="Cargo" [(ngModel)]="modalDadosUsuario.cargo">
-                    <mat-hint>* Obrigatório</mat-hint>
                 </mat-form-field>
             </div>
 
@@ -105,7 +100,6 @@
                 <mat-form-field appearance="outline">
                     <mat-label>Salário atual</mat-label>
                     <input matInput placeholder="Salário atual" [(ngModel)]="modalDadosUsuario.salario">
-                    <mat-hint>* Obrigatório</mat-hint>
                 </mat-form-field>
             </div>
 
@@ -113,7 +107,6 @@
                 <mat-form-field appearance="outline">
                     <mat-label>Data de nascimento</mat-label>
                     <input matInput placeholder="Data de nascimento" [(ngModel)]="modalDadosUsuario.dataNascimento">
-                    <mat-hint>* Obrigatório</mat-hint>
                 </mat-form-field>
             </div>
 
@@ -121,7 +114,6 @@
                 <mat-form-field appearance="outline">
                     <mat-label>Data de admissão</mat-label>
                     <input matInput placeholder="Data de admissão" [(ngModel)]="modalDadosUsuario.dataAdmissao">
-                    <mat-hint>* Obrigatório</mat-hint>
                 </mat-form-field>
             </div>
 
@@ -132,7 +124,16 @@
                     <button mat-icon-button matSuffix (click)="modalHidePassword = !modalHidePassword" [attr.aria-label]="'Ocultar password'" [attr.aria-pressed]="modalHidePassword">
                         <mat-icon>{{ modalHidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
                     </button>
-                    <mat-hint>* Obrigatório</mat-hint>
+                </mat-form-field>
+            </div>
+
+            <div class="line">
+                <mat-form-field appearance="outline">
+                    <mat-label>Confirmação da senha</mat-label>
+                    <input matInput [type]="modalHidePasswordConfirmacao ? 'password' : 'text'" [(ngModel)]="modalConfirmacaoSenha">
+                    <button mat-icon-button matSuffix (click)="modalHidePasswordConfirmacao = !modalHidePasswordConfirmacao" [attr.aria-label]="'Ocultar password'" [attr.aria-pressed]="modalHidePasswordConfirmacao">
+                        <mat-icon>{{ modalHidePasswordConfirmacao ? 'visibility_off' : 'visibility' }}</mat-icon>
+                    </button>
                 </mat-form-field>
             </div>
         </div>
@@ -144,7 +145,6 @@
                 <mat-form-field appearance="outline">
                     <mat-label>CEP</mat-label>
                     <input matInput placeholder="cep" [(ngModel)]="modalDadosUsuario.endereco.cep">
-                    <mat-hint>* Obrigatório</mat-hint>
                 </mat-form-field>
             </div>
 
@@ -152,7 +152,6 @@
                 <mat-form-field appearance="outline">
                     <mat-label>Logradouro</mat-label>
                     <input matInput placeholder="Longradouro" [(ngModel)]="modalDadosUsuario.endereco.logradouro">
-                    <mat-hint>* Obrigatório</mat-hint>
                 </mat-form-field>
             </div>
 
@@ -160,7 +159,6 @@
                 <mat-form-field appearance="outline">
                     <mat-label>Bairro</mat-label>
                     <input matInput placeholder="Bairro" [(ngModel)]="modalDadosUsuario.endereco.bairro">
-                    <mat-hint>* Obrigatório</mat-hint>
                 </mat-form-field>
             </div>
 
@@ -168,7 +166,6 @@
                 <mat-form-field appearance="outline">
                     <mat-label>Cidade</mat-label>
                     <input matInput placeholder="Cidade" [(ngModel)]="modalDadosUsuario.endereco.cidade">
-                    <mat-hint>* Obrigatório</mat-hint>
                 </mat-form-field>
             </div>
 
@@ -176,7 +173,6 @@
                 <mat-form-field appearance="outline">
                     <mat-label>Estado</mat-label>
                     <input matInput placeholder="Estado" [(ngModel)]="modalDadosUsuario.endereco.estado">
-                    <mat-hint>* Obrigatório</mat-hint>
                 </mat-form-field>
             </div>
         </div>
@@ -184,12 +180,16 @@
         <h1 class="margin-top">Dependentes ({{ modalDadosUsuario.dependentes.length }}) <a href="javascript:void(0)" (click)="addDependente(modalDadosUsuario)">Adicionar</a></h1>
 
         <div class="form">
-            <div class="super-line" *ngFor="let dependente of modalDadosUsuario.dependentes">
+            <div class="super-line" *ngFor="let dependente of modalDadosUsuario.dependentes; let i = index;" [attr.data-index]="i">
+                <div class="title">
+                    Dependente {{ i + 1 }}
+                    <a href="javascript:void(0)" (click)="removeDependente(modalDadosUsuario, i)">Remover</a>
+                </div>
+
                 <div class="line">
                     <mat-form-field appearance="outline">
                         <mat-label>CPF</mat-label>
                         <input matInput placeholder="CPF" [(ngModel)]="dependente.cpf">
-                        <mat-hint>* Obrigatório</mat-hint>
                     </mat-form-field>
                 </div>
 
@@ -197,7 +197,6 @@
                     <mat-form-field appearance="outline">
                         <mat-label>Nome</mat-label>
                         <input matInput placeholder="Nome" [(ngModel)]="dependente.nome">
-                        <mat-hint>* Obrigatório</mat-hint>
                     </mat-form-field>
                 </div>
 
@@ -205,12 +204,11 @@
                     <mat-form-field appearance="outline">
                         <mat-label>Parentesco</mat-label>
                         <input matInput placeholder="Parentesco" [(ngModel)]="dependente.parentesco">
-                        <mat-hint>* Obrigatório</mat-hint>
                     </mat-form-field>
                 </div>
             </div>
 
-            <div class="line">
+            <div class="line button">
                 <button mat-raised-button color="primary" (click)="actionModal(modal.role)">{{ modal.role === 'add' ? 'Adicionar' : 'Salvar' }}</button>
             </div>
         </div>
