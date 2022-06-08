@@ -46,7 +46,7 @@ try:
 except:
   print("Resultado: falha")
   
-  def testaiterationsdiferentes():
+ def testaiterationsdiferentes():
   assert modulo_cripto.generate_hashed_password(type, password,salt1,iterations,dklen) != modulo_cripto.generate_hashed_password(type, password,salt1,iterations_test,dklen)
 
 print(f"Testa se a função retorna valores distintos para os mesmos parâmetros apenas com iterações (iterations = {iterations}, iterations_test = {iterations_test}) diferentes" )
