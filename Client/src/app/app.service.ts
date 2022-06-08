@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { Usuario } from './models/usuario.model';
 import { Login } from './models/login.model';
-import { Projeto } from './models/projetos.model';
+import { ParticipanteAPI, Projeto } from './models/projetos.model';
 
 @Injectable({
     providedIn: 'root'
@@ -12,6 +12,8 @@ import { Projeto } from './models/projetos.model';
 export class AppService {
     private apiUrl: string = environment.apiUrl;
     private authJWT: string = '';
+
+    private funcionariosData!: Array<Usuario>;
 
     constructor(private httpClientModule: HttpClient) {
     }
@@ -55,6 +57,11 @@ export class AppService {
     public getFuncionarios(): Promise<Array<Usuario>> {
         try {
             return new Promise<Array<Usuario>>((resolve, reject) => {
+                if (Array.isArray(this.funcionariosData)) {
+                    resolve(this.funcionariosData);
+                    return;
+                }    
+
                 /**
                  * Busca os dados no servidor
                  */
@@ -67,7 +74,10 @@ export class AppService {
                         })
                     })
                     .toPromise()
-                    .then((funcionariosData: any) => resolve(funcionariosData))
+                    .then((funcionariosData: any) => {
+                        this.funcionariosData = funcionariosData;
+                        resolve(funcionariosData);
+                    })
                     .catch(e => resolve(e));
             });
         }
@@ -222,14 +232,29 @@ export class AppService {
         }
     }
 
-    public addProjeto(nome: string, descricao: string, participantes: Array<string>) {
+    public addProjeto(projeto: Projeto) {
         try {
             return new Promise<any>((resolve, reject) => {
+                let participantes: Array<ParticipanteAPI> = new Array<ParticipanteAPI>();
+
+                for (let participante of projeto.participantes) {
+                    let participanteAPIData = new ParticipanteAPI();
+                    participanteAPIData.fillData(participante);
+
+                    participantes.push(participanteAPIData);
+                }
+
                 /**
                  * Busca os dados no servidor
                  */
                 this.httpClientModule
-                    .put<any>(`${this.apiUrl}/projetos/add`, { nome, descricao, participantes },
+                    .put<any>(`${this.apiUrl}/projetos/add`, {
+                        nome: projeto.nome,
+                        descricao: projeto.descricao,
+                        dataInicio: projeto.dataInicio,
+                        dataFim: projeto.dataFim,
+                        participantes
+                    },
                     {
                         headers: new HttpHeaders ({
                             'Content-Type': 'application/json; charset=utf-8',
@@ -246,14 +271,29 @@ export class AppService {
         }
     }
 
-    public editProjeto(id: string, nome: string, descricao: string, participantes: Array<string>) {
+    public editProjeto(projeto: Projeto) {
         try {
             return new Promise<any>((resolve, reject) => {
+                let participantes: Array<ParticipanteAPI> = new Array<ParticipanteAPI>();
+
+                for (let participante of projeto.participantes) {
+                    let participanteAPIData = new ParticipanteAPI();
+                    participanteAPIData.fillData(participante);
+
+                    participantes.push(participanteAPIData);
+                }
+
                 /**
                  * Busca os dados no servidor
                  */
                 this.httpClientModule
-                    .post<any>(`${this.apiUrl}/projetos/${id}`, { nome, descricao, participantes },
+                    .post<any>(`${this.apiUrl}/projetos/${projeto._id}`, {
+                        nome: projeto.nome,
+                        descricao: projeto.descricao,
+                        dataInicio: projeto.dataInicio,
+                        dataFim: projeto.dataFim,
+                        participantes
+                    },
                     {
                         headers: new HttpHeaders ({
                             'Content-Type': 'application/json; charset=utf-8',

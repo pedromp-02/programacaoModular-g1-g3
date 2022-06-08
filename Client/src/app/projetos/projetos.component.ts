@@ -19,6 +19,7 @@ export class ProjetosComponent implements OnInit {
      */
     public seusProjetosData: Array<Projeto> = [];
     public data: Array<Projeto> = [];
+    public funcionariosData: Array<Usuario> = [];
     public componentIsLoading: boolean = true;
 
     public gridProjetosUserData: MatTableDataSource<any> = new MatTableDataSource();
@@ -34,10 +35,7 @@ export class ProjetosComponent implements OnInit {
      */
     public showModal: boolean = false;
     public modal: any = {};
-    public modalId: string = '';
-    public modalNome: string = '';
-    public modalDescricao: string = '';
-    public modalParticipante: string = '';
+    public modalProjetoData!: Projeto;
 
     constructor(
         private appService: AppService,
@@ -80,6 +78,7 @@ export class ProjetosComponent implements OnInit {
 
         if (this.data.length === 0) {
             this.data = await this.appService.getProjetos();
+            this.funcionariosData = await this.appService.getFuncionarios();
         }
 
         this.componentIsLoading = false;
@@ -111,6 +110,8 @@ export class ProjetosComponent implements OnInit {
             };
 
             this.showModal = true;
+            this.modalProjetoData = new Projeto();
+            this.modalProjetoData.fillBlank();
         }
         else {
             this.modal = {
@@ -119,12 +120,7 @@ export class ProjetosComponent implements OnInit {
             };
 
             const projeto = this.data.filter(e => e._id === id)[0];
-
-            this.modalId = id;
-            this.modalNome = projeto.nome;
-            this.modalDescricao = projeto.descricao;
-            this.modalParticipante = projeto.participantes[0].email;
-
+            this.modalProjetoData = projeto;
             this.showModal = true;
         }
     }
@@ -133,11 +129,8 @@ export class ProjetosComponent implements OnInit {
      * Função responsável por ocultar a modal
      */
     public hideModal() {
-        this.modalId = '';
-        this.modalNome = '';
-        this.modalDescricao = '';
-        this.modalParticipante = '';
-
+        this.modalProjetoData = new Projeto();
+        this.modalProjetoData.fillBlank();
         this.showModal = false;
     }
 
@@ -167,8 +160,24 @@ export class ProjetosComponent implements OnInit {
         let message: string;
         let data: any;
 
+        if (!this.validaData('início', this.modalProjetoData.dataInicio))
+            return;
+
+        if (!this.validaData('término', this.modalProjetoData.dataFim))
+            return;
+
+        if (!this.comparaDatas())
+            return;
+
+        for (let i = 0; i < this.modalProjetoData.participantes.length; i++) {
+            const participante = this.modalProjetoData.participantes[i];
+    
+            if (!this.validaHorario(participante.cargaHorariaSemanal.toString(), i))
+                return;
+        }
+
         if (role === 'add') {
-            data = await this.appService.addProjeto(this.modalNome, this.modalDescricao, [this.modalParticipante]);
+            //data = await this.appService.addProjeto(this.modalProjetoData);
 
             if (data.hasOwnProperty('status')) {
                 message = data.error.message;
@@ -178,7 +187,7 @@ export class ProjetosComponent implements OnInit {
             }
         }
         else {
-            data = await this.appService.editProjeto(this.modalId, this.modalNome, this.modalDescricao, [this.modalParticipante]);
+            //data = await this.appService.editProjeto(this.modalProjetoData);
 
             if (data.hasOwnProperty('status')) {
                 message = data.error.message;
@@ -211,5 +220,81 @@ export class ProjetosComponent implements OnInit {
         }
 
         return str;
+    }
+
+    public addParticipante(projeto: Projeto) {
+        projeto.participantes.push({
+            matricula: '',
+            cargaHorariaSemanal: 0,
+            nome: '',
+            email: ''
+        })
+    }
+
+    public removeParticipante(projeto: Projeto, index: number) {
+        projeto.participantes = projeto.participantes.filter((e, i) => i !== index);
+    }
+
+    /**
+     * Valida dados
+     */
+     private validaData(text: string, campo: string) {
+        if(!/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(campo)) {
+            this.snackBar.open(`A data de ${text} não está em um formato válido.`, 'Fechar');
+            return false;
+        }
+
+        var parts = campo.split("/");
+        var day = parseInt(parts[0], 10);
+        var month = parseInt(parts[1], 10);
+        var year = parseInt(parts[2], 10);
+
+        if(year < 1000 || year > 3000 || month == 0 || month > 12) {
+            this.snackBar.open(`A data de ${text} não é válida.`, 'Fechar');
+            return false;
+        }
+
+        var monthLength = [ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ];
+
+        if(year % 400 == 0 || (year % 100 != 0 && year % 4 == 0))
+            monthLength[1] = 29;
+
+        if (day > 0 && day <= monthLength[month - 1]) {
+            return true;
+        }
+
+        this.snackBar.open(`A data de ${text} não é válida.`, 'Fechar');
+        return false;
+    }
+
+    private comparaDatas() {
+        const partsInicio = this.modalProjetoData.dataInicio.split("/");
+        const dayInicio = parseInt(partsInicio[0], 10);
+        const monthInicio = parseInt(partsInicio[1], 10) - 1;
+        const yearInicio = parseInt(partsInicio[2], 10);
+        
+        const partsFim = this.modalProjetoData.dataFim.split("/");
+        const dayFim = parseInt(partsFim[0], 10);
+        const monthFim = parseInt(partsFim[1], 10) - 1;
+        const yearFim = parseInt(partsFim[2], 10);
+        
+        const dataInicio = new Date(yearInicio, monthInicio, dayInicio);
+        const dataFim = new Date(yearFim, monthFim, dayFim);
+
+        if (dataFim.getTime() > dataInicio.getTime()) {
+            return true;
+        }
+
+        this.snackBar.open(`A data de término deve ser maior que a data de início`, 'Fechar');
+        return false;
+    }
+
+    private validaHorario(campo: string, i: number) {
+        if (/^[0-9]*$/.test(campo)) {
+            return true;
+        }
+
+        this.snackBar.open(`A carga horária do participante ${i + 1} não está em um formato válido.`, 'Fechar');
+        return false;
     }
 }
