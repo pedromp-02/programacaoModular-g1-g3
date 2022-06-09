@@ -27,8 +27,10 @@ try:
 except:
   print("Resultado: falha")
 
+  #troquei
+  
 def testasenhaerrada():
-  assert modulo_cripto.generate_hashed_password(type, password,salt1,iterations,dklen) != modulo_cripto.generate_hashed_password(type, falsepassword,salt1,iterations,dklen)
+  assert modulo_cripto.generate_hashed_password(type, password,salt1,iterations,dklen) == modulo_cripto.generate_hashed_password(type, falsepassword,salt1,iterations,dklen)
 
 print(f"Testa se a senha errada digitada no login (falsepassword = {falsepassword}) NÃO corresponde a senha que o usuário criou no cadastro (password = {password}). Se não houver erro o teste foi bem-sucedido")
 try:
