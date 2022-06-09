@@ -1,4 +1,4 @@
-#https://1drv.ms/b/s!ArA-DhLm6QVXiK5UE-eEcEZxLB0-2w
+#https://1drv.ms/b/s!ArA-DhLm6QVXkcQJqV96KM6GkECwPA
 import hashlib
 
 def hash(hasher, password, salt):
