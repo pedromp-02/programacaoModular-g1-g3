@@ -25,7 +25,7 @@ def cria_hasher(cryptography):
         return hashlib.blake2s()
     else:
         return - 1
-
+#teste
 
 def generate_hashed_password(cryptography, password, salt, iterations, dklen):
     derivatekey = ''
